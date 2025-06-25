@@ -13,7 +13,6 @@ import java.util.List;
 
 public class BannerPagerAdapter extends RecyclerView.Adapter<BannerPagerAdapter.ViewHolder> {
     private final List<Integer> banners; // List drawable resource ids
-
     public BannerPagerAdapter(List<Integer> banners) {
         this.banners = banners;
     }
