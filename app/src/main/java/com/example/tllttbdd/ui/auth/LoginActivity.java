@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.TextView; // Quan trọng: import TextView
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,14 +14,11 @@ import com.example.tllttbdd.data.model.LoginResponse;
 import com.example.tllttbdd.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
-    // Khai báo biến
     private EditText edtUsername, edtPassword;
     private Button btnLogin;
     private TextView tvResult;
     private AuthViewModel authViewModel;
-
-    // 1. SỬA Ở ĐÂY: Khai báo btnGoToRegister là một TextView
-    private TextView btnGoToRegister; // <<-- SỬA Ở ĐÂY
+    private TextView btnGoToRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +34,16 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // Đặt layout cho Activity
+        // Giả sử file layout của bạn tên là activity_login.xml
         setContentView(R.layout.activity_login);
 
-        // Ánh xạ View
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvResult = findViewById(R.id.tvResult);
 
-        // 2. SỬA Ở ĐÂY: Dòng này vẫn giữ nguyên, nhưng vì biến đã là TextView nên sẽ không còn lỗi
-        btnGoToRegister = findViewById(R.id.btnGoToRegister); // <<-- DÒNG NÀY GIỜ ĐÃ ĐÚNG
+        btnGoToRegister = findViewById(R.id.btnGoToRegister);
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
@@ -57,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putBoolean("is_logged_in", true);
                 editor.putInt("id_login", loginResponse.user.id_login);
                 editor.putString("name_login", loginResponse.user.name_login);
-                // ... lưu thêm các trường khác nếu cần
                 editor.apply();
 
                 Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();

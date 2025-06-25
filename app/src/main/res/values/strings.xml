@@ -50,4 +50,5 @@
 
     <string name="sign_up_prompt">Don\'t have an account? <font color='#F57C00'><b>Sign Up</b></font></string>
     <string name="register_prompt">Chưa có tài khoản? <font color='#2E7D32'><b>Đăng ký</b></font></string>
+    <string name="login_prompt">Đã có tài khoản? <font color='#2E7D32'><b>Đăng nhập</b></font></string>
 </resources>
