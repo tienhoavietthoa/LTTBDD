@@ -14,10 +14,14 @@ import com.example.tllttbdd.data.model.LoginResponse;
 import com.example.tllttbdd.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
+    // Khai báo biến
     private EditText edtUsername, edtPassword;
-    private Button btnLogin, btnGoToRegister;
+    private Button btnLogin;
     private TextView tvResult;
     private AuthViewModel authViewModel;
+
+    // 1. SỬA Ở ĐÂY: Khai báo btnGoToRegister là một TextView
+    private TextView btnGoToRegister; // <<-- SỬA Ở ĐÂY
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +39,14 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
+        // Ánh xạ View
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvResult = findViewById(R.id.tvResult);
-        btnGoToRegister = findViewById(R.id.btnGoToRegister); // Thêm dòng này
+
+        // 2. SỬA Ở ĐÂY: Dòng này vẫn giữ nguyên, nhưng vì biến đã là TextView nên sẽ không còn lỗi
+        btnGoToRegister = findViewById(R.id.btnGoToRegister); // <<-- DÒNG NÀY GIỜ ĐÃ ĐÚNG
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 

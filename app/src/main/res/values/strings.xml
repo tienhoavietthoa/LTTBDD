@@ -47,4 +47,7 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+
+    <string name="sign_up_prompt">Don\'t have an account? <font color='#F57C00'><b>Sign Up</b></font></string>
+    <string name="register_prompt">Chưa có tài khoản? <font color='#2E7D32'><b>Đăng ký</b></font></string>
 </resources>
