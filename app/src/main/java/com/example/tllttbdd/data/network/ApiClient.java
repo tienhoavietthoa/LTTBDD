@@ -10,7 +10,6 @@ public class ApiClient {
 
     public static Retrofit getClient() {
         if (retrofit == null) {
-            // Thêm logging để xem request/response khi debug
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
