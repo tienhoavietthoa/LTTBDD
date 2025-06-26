@@ -1,75 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="24dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.account.AccountFragment">
 
-    <TextView
-        android:id="@+id/textAccount"
+    <!-- Phần 1: Panel chứa thông tin tài khoản cố định -->
+    <!-- Bạn có thể tùy chỉnh background cho phần này -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Thông tin tài khoản"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvName"
+        <TextView
+            android:id="@+id/textAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thông tin tài khoản"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            tools:text="Tên: Nguyễn Văn A"/>
+
+        <TextView
+            android:id="@+id/tvPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            tools:text="Số điện thoại: 0909123456"/>
+
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            tools:text="Email: email@example.com"/>
+
+        <TextView
+            android:id="@+id/tvDob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            tools:text="Ngày sinh: 01/01/2000"/>
+    </LinearLayout>
+
+    <!-- Một đường kẻ ngang để phân chia -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+    <!-- Phần 2: Hệ thống Tab -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tên: "
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        app:tabGravity="fill"
+        app:tabMode="fixed" />
 
-    <TextView
-        android:id="@+id/tvPhone"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Số điện thoại: "
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/tvEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email: "
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
-        android:id="@+id/tvDob"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ngày sinh: "
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnEdit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Chỉnh sửa thông tin"
-        android:layout_marginBottom="8dp"/>
-
-    <Button
-        android:id="@+id/btnChangePassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Đổi mật khẩu"
-        android:layout_marginBottom="8dp"/>
-
-    <Button
-        android:id="@+id/btnDelete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Xóa tài khoản"
-        android:layout_marginBottom="24dp"
-        android:textColor="@android:color/holo_red_dark"/>
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Đăng xuất"/>
 </LinearLayout>
