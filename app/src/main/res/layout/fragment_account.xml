@@ -7,54 +7,65 @@
     android:orientation="vertical"
     tools:context=".ui.account.AccountFragment">
 
-    <!-- Phần 1: Panel chứa thông tin tài khoản cố định -->
-    <!-- Bạn có thể tùy chỉnh background cho phần này -->
-    <LinearLayout
+    <!-- Phần 1: Header chào mừng, sắp xếp theo chiều ngang -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/textAccount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Thông tin tài khoản"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/background_avatar"
+            android:padding="16dp"
+            android:src="@drawable/ic_avatar_default"
+            android:contentDescription="Ảnh đại diện"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/welcome_text_group"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"
-            tools:text="Tên: Nguyễn Văn A"/>
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toEndOf="@id/ivAvatar"
+            app:layout_constraintEnd_toStartOf="@id/ivArrow"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/tvPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"
-            tools:text="Số điện thoại: 0909123456"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chào mừng trở lại"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"
-            tools:text="Email: email@example.com"/>
+            <TextView
+                android:id="@+id/tvWelcomeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="Nghia Tran" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvDob"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/ivArrow"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            tools:text="Ngày sinh: 01/01/2000"/>
-    </LinearLayout>
+            android:src="@drawable/ic_chevron_right_24"
+            android:contentDescription="Xem chi tiết"
+            app:tint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Một đường kẻ ngang để phân chia -->
     <View
@@ -62,7 +73,7 @@
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"/>
 
-    <!-- Phần 2: Hệ thống Tab -->
+    <!-- Phần 2: Hệ thống Tab và các nút chức năng (Giữ nguyên) -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"

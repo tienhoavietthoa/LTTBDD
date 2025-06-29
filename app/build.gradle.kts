@@ -36,12 +36,17 @@ android {
 }
 
 dependencies {
+    // Các thư viện Retrofit và OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // THAY ĐỔI QUAN TRỌNG: Khai báo thư viện Material trực tiếp
     implementation ("com.google.android.material:material:1.12.0")
+
+    // Các thư viện còn lại của bạn được giữ nguyên
     implementation(libs.appcompat)
-    implementation(libs.material)
+    // Dòng implementation(libs.material) đã được xóa để tránh xung đột
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)

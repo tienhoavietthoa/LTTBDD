@@ -10,6 +10,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.util.Log;
 
 public class AccountRepository {
     private final AccountApi api;
@@ -22,21 +23,37 @@ public class AccountRepository {
         api = ApiClient.getClient().create(AccountApi.class);
     }
 
-    public LiveData<User> getUser() { return user; }
+    public LiveData<User> getUser () { return user; }
     public LiveData<Map<String, Object>> getUpdateResult() { return updateResult; }
     public LiveData<Map<String, Object>> getPasswordResult() { return passwordResult; }
     public LiveData<Map<String, Object>> getDeleteResult() { return deleteResult; }
 
     public void fetchProfile(int idLogin) {
+        Log.d("AccountRepository", "Fetching user profile for ID: " + idLogin);
         api.getProfile(idLogin).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().user != null) {
-                    user.postValue(response.body().user);
+                if (response.isSuccessful()) {
+                    if (response.body() != null && response.body().user != null) {
+                        user.postValue(response.body().user);
+                        Log.d("AccountRepository", "User profile fetched successfully: " + response.body().user.name_information);
+                    } else {
+                        // Trường hợp response.body() là null hoặc response.body().user là null
+                        Log.e("AccountRepository", "Failed to fetch user profile: User object is null or response body is empty. Message: " + response.message());
+                        user.postValue(null);
+                    }
+                } else {
+                    // Trường hợp response không thành công (ví dụ: HTTP 404, 500)
+                    Log.e("AccountRepository", "Failed to fetch user profile. HTTP Code: " + response.code() + ", Message: " + response.message());
+                    user.postValue(null);
                 }
             }
+
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) { }
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Log.e("AccountRepository", "Error fetching user profile: " + t.getMessage());
+                user.postValue(null); // Nếu có lỗi, đặt user là null
+            }
         });
     }
 
@@ -48,8 +65,11 @@ public class AccountRepository {
                 // Fetch lại profile mới nhất sau khi update
                 fetchProfile(idLogin);
             }
+
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) { }
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Log.e("AccountRepository", "Error updating profile: " + t.getMessage());
+            }
         });
     }
 
@@ -61,8 +81,11 @@ public class AccountRepository {
                 // Fetch lại profile mới nhất sau khi đổi mật khẩu
                 fetchProfile(idLogin);
             }
+
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) { }
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Log.e("AccountRepository", "Error changing password: " + t.getMessage());
+            }
         });
     }
 
@@ -72,8 +95,11 @@ public class AccountRepository {
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 deleteResult.postValue(response.body());
             }
+
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) { }
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Log.e("AccountRepository", "Error deleting account: " + t.getMessage());
+            }
         });
     }
 }

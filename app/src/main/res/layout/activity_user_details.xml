@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    tools:context=".ui.account.UserDetailsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="30dp"
+            android:gravity="center_horizontal"
+            android:background="@color/plant_green_darker">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageAvatar"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_person_outline_24"
+                android:scaleType="centerInside"
+                android:padding="24dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorPrimary"
+                android:background="?attr/colorSurface"/>
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:textColor="@color/white"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                tools:text="Nghia" />
+
+            <TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/white"
+                tools:text="nghia@gmail.com" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thông tin chi tiết"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="8dp">
+
+                <LinearLayout style="@style/UserInfoRow">
+                    <ImageView style="@style/UserInfoIcon" android:src="@drawable/ic_phone_outline_24" />
+                    <TextView android:id="@+id/tvPhone" style="@style/UserInfoText" tools:text="Số điện thoại: 123" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/UserInfoRow">
+                    <ImageView style="@style/UserInfoIcon" android:src="@drawable/ic_calendar_today_24" />
+                    <TextView android:id="@+id/tvDob" style="@style/UserInfoText" tools:text="Ngày sinh: 2020-02-01" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quản lý tài khoản"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/btnEdit"
+                    style="@style/ActionRow">
+                    <ImageView android:id="@+id/icon_edit" style="@style/ActionIcon" android:src="@drawable/ic_edit_24" />
+                    <TextView style="@style/ActionText"
+                        android:layout_toEndOf="@id/icon_edit"
+                        android:layout_marginStart="16dp"
+                        android:text="Chỉnh sửa thông tin" />
+                    <ImageView style="@style/ActionChevron" />
+                </RelativeLayout>
+
+                <View style="@style/Divider"/>
+
+                <RelativeLayout
+                    android:id="@+id/btnChangePassword"
+                    style="@style/ActionRow">
+                    <ImageView android:id="@+id/icon_password" style="@style/ActionIcon" android:src="@drawable/ic_lock_outline_24" />
+                    <TextView style="@style/ActionText"
+                        android:layout_toEndOf="@id/icon_password"
+                        android:layout_marginStart="16dp"
+                        android:text="Đổi mật khẩu" />
+                    <ImageView style="@style/ActionChevron" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:layout_marginTop="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đăng xuất"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:textColor="?attr/colorError"
+                android:text="Xóa tài khoản"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

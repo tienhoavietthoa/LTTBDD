@@ -27,8 +27,22 @@
 
         <activity
             android:name=".ui.auth.RegisterActivity"
-            android:exported="false" /> <activity
-        android:name=".MainActivity"
-        android:exported="false" /> </application>
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.account.UserDetailsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".ui.account.EditProfileActivity" />
+        <activity android:name=".ui.account.ChangePasswordActivity" />
+
+    </application>
+
+
 
 </manifest>
