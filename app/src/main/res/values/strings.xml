@@ -2,7 +2,7 @@
     <string name="app_name">TLLTTBDD</string>
     <string name="title_home">Trang Chủ</string>
     <string name="title_dashboard">Thư Mục</string>
-    <string name="title_notifications">Thông Báo</string>
+    <string name="title_notifications">Liên hệ</string>
     <string name="title_cart">Giỏ Hàng</string>
     <string name="title_account">Tài Khoản</string>
     <!-- Strings used for fragments for navigation -->
