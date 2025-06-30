@@ -12,20 +12,13 @@ public interface CartApi {
 
     @FormUrlEncoded
     @POST("/api/cart/add")
-    Call<ApiResponse> addToCart(@Field("productId") int productId, @Field("quantity") int quantity);
+    Call<ApiResponse> addToCart(@Field("productId") int productId, @Field("quantity") int quantity, @Field("id_login") int idLogin);
 
     @FormUrlEncoded
     @POST("/api/cart/update")
-    Call<ApiResponse> updateCart(@Field("productId") int productId, @Field("quantity") int quantity);
+    Call<ApiResponse> updateCart(@Field("productId") int productId, @Field("quantity") int quantity, @Field("id_login") int idLogin);
 
     @FormUrlEncoded
     @POST("/api/cart/remove")
-    Call<ApiResponse> removeFromCart(@Field("productId") int productId);
-
-    // Nếu có đặt hàng qua cart
-    @FormUrlEncoded
-    @POST("/api/cart/place-order")
-    Call<ApiResponse> placeOrder(@Field("name_order") String name,
-                                 @Field("phone_order") String phone,
-                                 @Field("address_order") String address);
+    Call<ApiResponse> removeFromCart(@Field("productId") int productId, @Field("id_login") int idLogin);
 }

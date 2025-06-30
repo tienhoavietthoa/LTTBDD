@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.tllttbdd.databinding.FragmentCartBinding;
+import com.example.tllttbdd.data.model.CartItem;
 
 public class CartFragment extends Fragment {
 
@@ -24,7 +25,16 @@ public class CartFragment extends Fragment {
         binding = FragmentCartBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        adapter = new CartAdapter(null);
+        adapter = new CartAdapter(null, new CartAdapter.OnCartActionListener() {
+            @Override
+            public void onRemove(CartItem item) {
+                cartViewModel.removeFromCart(item.productId);
+            }
+            @Override
+            public void onQuantityChange(CartItem item, int newQuantity) {
+                cartViewModel.updateCart(item.productId, newQuantity);
+            }
+        });
         binding.cartRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.cartRecyclerView.setAdapter(adapter);
 
@@ -33,7 +43,6 @@ public class CartFragment extends Fragment {
         cartViewModel.getCartItems().observe(getViewLifecycleOwner(), items -> adapter.setItems(items));
         cartViewModel.getTotal().observe(getViewLifecycleOwner(), total -> binding.cartTotal.setText("Tổng: " + total + " đ"));
 
-        // Sửa dòng này:
         cartViewModel.fetchCart(requireContext());
 
         return root;

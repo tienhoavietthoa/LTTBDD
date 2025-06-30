@@ -14,19 +14,15 @@ public class CartRepository {
         return cartApi.getCart(idLogin);
     }
 
-    public Call<ApiResponse> addToCart(int productId, int quantity) {
-        return cartApi.addToCart(productId, quantity);
+    public Call<ApiResponse> addToCart(int productId, int quantity, int idLogin) {
+        return cartApi.addToCart(productId, quantity, idLogin);
     }
 
-    public Call<ApiResponse> updateCart(int productId, int quantity) {
-        return cartApi.updateCart(productId, quantity);
+    public Call<ApiResponse> updateCart(int productId, int quantity, int idLogin) {
+        return cartApi.updateCart(productId, quantity, idLogin);
     }
 
-    public Call<ApiResponse> removeFromCart(int productId) {
-        return cartApi.removeFromCart(productId);
-    }
-
-    public Call<ApiResponse> placeOrder(String name, String phone, String address) {
-        return cartApi.placeOrder(name, phone, address);
+    public Call<ApiResponse> removeFromCart(int productId, int idLogin) {
+        return cartApi.removeFromCart(productId, idLogin);
     }
 }
