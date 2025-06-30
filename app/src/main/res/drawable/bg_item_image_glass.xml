@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#22A5D6A7"/> <!-- glass effect, xanh nhạt trong suốt -->
+    <corners android:radius="14dp"/>
+</shape>
