@@ -3,6 +3,7 @@ package com.example.tllttbdd.ui.cart;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Button;
@@ -20,10 +21,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public interface OnCartActionListener {
         void onRemove(CartItem item);
         void onQuantityChange(CartItem item, int newQuantity);
+        void onSelectChanged(CartItem item, boolean selected); // Thêm dòng này
     }
 
     private List<CartItem> items;
-    private OnCartActionListener listener;
+    private final OnCartActionListener listener; // Thêm từ khóa final
 
     public CartAdapter(List<CartItem> items, OnCartActionListener listener) {
         this.items = items;
@@ -53,6 +55,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(holder.image);
 
+
+
         holder.btnRemove.setOnClickListener(v -> {
             if (listener != null) listener.onRemove(item);
         });
@@ -64,15 +68,19 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         });
     }
 
+    // Thêm getter cho danh sách item
+    public List<CartItem> getItems() {
+        return items;
+    }
     @Override
     public int getItemCount() {
         return items == null ? 0 : items.size();
     }
-
     static class CartViewHolder extends RecyclerView.ViewHolder {
         TextView name, price, quantity;
         ImageView image;
         Button btnRemove, btnIncrease, btnDecrease;
+
         CartViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.cartItemName);
@@ -82,6 +90,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             btnRemove = itemView.findViewById(R.id.btnRemove);
             btnIncrease = itemView.findViewById(R.id.btnIncrease);
             btnDecrease = itemView.findViewById(R.id.btnDecrease);
+
         }
     }
 }

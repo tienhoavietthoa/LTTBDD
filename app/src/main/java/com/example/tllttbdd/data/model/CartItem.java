@@ -6,4 +6,5 @@ public class CartItem {
     public int price;
     public String image;
     public int quantity;
+    public boolean selected = false; // Thêm dòng này
 }

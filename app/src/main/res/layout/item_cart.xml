@@ -4,6 +4,7 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
+
     <ImageView
         android:id="@+id/cartItemImage"
         android:layout_width="60dp"
