@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.Product;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -39,8 +40,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Product p = products.get(position);
         holder.name.setText(p.name_product);
         holder.price.setText(p.price + " đ");
-        // Nếu có Glide/Picasso thì load ảnh ở đây
-        // Glide.with(holder.image.getContext()).load("http://10.0.2.2:3000" + p.image_product).into(holder.image);
+        String imageUrl = "http://10.0.2.2:3000" + p.image_product;
+        Glide.with(holder.image.getContext())
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(holder.image);
     }
 
     @Override
