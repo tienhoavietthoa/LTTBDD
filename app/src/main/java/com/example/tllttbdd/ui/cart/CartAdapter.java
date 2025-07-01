@@ -50,13 +50,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         CartItem item = items.get(position);
         holder.name.setText(item.name);
         holder.price.setText(item.price + " đ");
-        holder.quantity.setText("x" + item.quantity);
+        holder.txtQuantity.setText(String.valueOf(item.quantity)); // Đúng chỗ!
+
         Glide.with(holder.image.getContext())
                 .load("http://10.0.2.2:3000" + item.image)
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(holder.image);
-
-
 
         holder.btnRemove.setOnClickListener(v -> {
             if (listener != null) listener.onRemove(item);
@@ -78,7 +77,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         return items == null ? 0 : items.size();
     }
     static class CartViewHolder extends RecyclerView.ViewHolder {
-        TextView name, price, quantity;
+        TextView name, price, txtQuantity;
         ImageView image;
         ImageButton btnRemove, btnIncrease, btnDecrease;
 
@@ -86,12 +85,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             super(itemView);
             name = itemView.findViewById(R.id.cartItemName);
             price = itemView.findViewById(R.id.cartItemPrice);
-            quantity = itemView.findViewById(R.id.cartItemQuantity);
+            txtQuantity = itemView.findViewById(R.id.txtQuantity); // Đổi tên biến
             image = itemView.findViewById(R.id.cartItemImage);
-            btnRemove = itemView.findViewById(R.id.btnRemove);     // SỬA Button -> ImageButton
-            btnIncrease = itemView.findViewById(R.id.btnIncrease); // SỬA Button -> ImageButton
+            btnRemove = itemView.findViewById(R.id.btnRemove);
+            btnIncrease = itemView.findViewById(R.id.btnIncrease);
             btnDecrease = itemView.findViewById(R.id.btnDecrease);
-
         }
     }
 }
