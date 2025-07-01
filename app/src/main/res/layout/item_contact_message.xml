@@ -1,0 +1,51 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="6dp"
+    android:paddingHorizontal="10dp">
+
+    <!-- Bong bóng tin nhắn căn phải, nền mờ, bo góc -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_message_bubble_glass"
+        android:padding="12dp"
+        android:layout_gravity="end">
+
+        <TextView
+            android:id="@+id/txtContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nội dung"
+            android:textSize="16sp"
+            android:textColor="#206A3C"
+            android:fontFamily="sans-serif"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:id="@+id/txtDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ngày gửi"
+                android:textSize="12sp"
+                android:textColor="#778BC34A"
+                android:fontFamily="sans-serif"/>
+
+            <TextView
+                android:id="@+id/txtPhoneContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" | SDT"
+                android:textSize="12sp"
+                android:textColor="#778BC34A"
+                android:fontFamily="sans-serif"
+                android:paddingStart="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
