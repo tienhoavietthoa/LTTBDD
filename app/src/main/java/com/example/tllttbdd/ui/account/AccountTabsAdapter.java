@@ -18,9 +18,9 @@ public class AccountTabsAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 1) {
-            return new PlaceholderFragment();
+            return new OrderHistoryFragment(); // Thay vì PlaceholderFragment
         }
-        return new AccountActionsFragment(); // Trả về fragment chứa các nút
+        return new AccountActionsFragment();
     }
 
     @Override

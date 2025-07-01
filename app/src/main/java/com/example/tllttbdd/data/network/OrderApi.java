@@ -1,7 +1,13 @@
 package com.example.tllttbdd.data.network;
 
 import com.example.tllttbdd.data.model.ApiResponse;
+import com.example.tllttbdd.data.model.OrderDetailResponse;
+import com.example.tllttbdd.data.model.OrderHistoryResponse;
+
 import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import retrofit2.http.Path;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
@@ -18,4 +24,11 @@ public interface OrderApi {
             @Field("id_login") int idLogin,
             @Field("products") String productsJson // Thêm dòng này
     );
+    // Thêm API lấy lịch sử đơn hàng
+    @GET("/order/api/history")
+    Call<OrderHistoryResponse> getOrderHistory(@Query("id_login") int idLogin);
+
+    // Thêm API lấy chi tiết đơn hàng
+    @GET("/order/api/detail/{id}")
+    Call<OrderDetailResponse> getOrderDetail(@Path("id") int orderId);
 }
