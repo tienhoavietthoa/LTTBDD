@@ -1,5 +1,6 @@
 package com.example.tllttbdd.ui.cart;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import com.example.tllttbdd.databinding.FragmentCartBinding;
 import com.example.tllttbdd.data.model.CartItem;
+import com.example.tllttbdd.ui.order.OrderActivity;
 
 public class CartFragment extends Fragment {
 
@@ -53,17 +55,17 @@ public class CartFragment extends Fragment {
         cartViewModel.fetchCart(requireContext());
 
         // Xử lý nút thanh toán
+        // Trong CartFragment
         binding.btnCheckout.setOnClickListener(v -> {
-            List<CartItem> selectedItems = new ArrayList<>();
-            for (CartItem item : adapter.getItems()) {
-                if (item.selected) selectedItems.add(item);
-            }
-            if (selectedItems.isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng chọn sản phẩm để thanh toán!", Toast.LENGTH_SHORT).show();
+            List<CartItem> cartItems = adapter.getItems();
+            if (cartItems == null || cartItems.isEmpty()) {
+                Toast.makeText(getContext(), "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            // TODO: Gửi selectedItems sang màn hình đặt hàng hoặc gọi API đặt hàng
-            Toast.makeText(getContext(), "Bạn đã chọn " + selectedItems.size() + " sản phẩm để thanh toán!", Toast.LENGTH_SHORT).show();
+            // Gửi toàn bộ sản phẩm sang màn hình đặt hàng
+            Intent intent = new Intent(getContext(), OrderActivity.class);
+            intent.putParcelableArrayListExtra("selectedItems", new ArrayList<>(cartItems));
+            startActivity(intent);
         });
 
         return root;

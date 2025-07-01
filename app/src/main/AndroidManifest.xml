@@ -32,6 +32,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        <activity android:name=".ui.order.OrderActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.account.UserDetailsActivity"
