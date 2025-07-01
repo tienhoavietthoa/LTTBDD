@@ -2,20 +2,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F7FAF6"
+
     android:padding="12dp">
 
     <TextView
         android:id="@+id/cartTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Giỏ hàng của bạn"
+        android:text="----------Giỏ hàng của bạn----------"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="#228B22"
+        android:textColor="#FFFFFF"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
-        android:paddingBottom="10dp"/>
+        android:paddingBottom="12dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cartRecyclerView"
@@ -23,7 +23,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@drawable/bg_cart_recycler_glass"
-        android:elevation="1dp"
         android:padding="6dp"/>
 
     <LinearLayout
@@ -36,15 +35,14 @@
 
         <TextView
             android:id="@+id/cartTotal"
-            android:layout_width="375dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:paddingEnd="18dp"
             android:text="Tổng: 0 đ"
-            android:textColor="#43A047"
+            android:textColor="#218C4D"
             android:textSize="18sp"
             android:textStyle="bold" />
-
     </LinearLayout>
 
     <Button
@@ -53,11 +51,11 @@
         android:layout_height="48dp"
         android:text="Thanh toán"
         android:textAllCaps="false"
-        android:backgroundTint="#43A047"
+        android:backgroundTint="#37B274"
         android:textColor="#FFFFFF"
         android:textSize="17sp"
         android:fontFamily="sans-serif-medium"
-        android:elevation="2dp"
+        android:elevation="1dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="4dp"/>
 </LinearLayout>
