@@ -2,6 +2,8 @@ package com.example.tllttbdd.ui.dashboard;
 
 import android.os.Bundle;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -28,6 +30,15 @@ public class ProductByCategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products_by_category);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        String categoryName = getIntent().getStringExtra("CATEGORY_NAME");
+        getSupportActionBar().setTitle(categoryName);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        // 🔧 KHỞI TẠO RECYCLERVIEW VÀ ADAPTER
         recyclerView = findViewById(R.id.recyclerProductsByCategory);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ProductAdapter(productList);
@@ -38,6 +49,7 @@ public class ProductByCategoryActivity extends AppCompatActivity {
             fetchProductsByCategory(categoryId);
         }
     }
+
 
     private void fetchProductsByCategory(int categoryId) {
         ProductApi api = ApiClient.getClient().create(ProductApi.class);
