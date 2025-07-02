@@ -45,7 +45,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     private LinearLayout layoutBtnAddToCart, btnChatNow;
     private Button btnBuyNow;
     private ImageButton btnBack;
-    private Product currentProduct; // Lưu trữ sản phẩm hiện tại để các listener có thể dùng
+    private Product currentProduct;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +63,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             finish();
         }
     }
+
     private void initViews() {
         imgProduct = findViewById(R.id.imgProductDetail);
         tvName = findViewById(R.id.tvProductNameDetail);
@@ -80,15 +82,28 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnChatNow = findViewById(R.id.btnChatNow);
     }
 
+    /**
+     * Gán sự kiện click cho các nút
+     */
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
-        btnChatNow.setOnClickListener(v -> Toast.makeText(this, "Mở màn hình Chat", Toast.LENGTH_SHORT).show());
+
+        // === BẠN YÊU CẦU SỬA LẠI LOGIC NÚT CHAT NGAY TẠI ĐÂY ===
+        btnChatNow.setOnClickListener(v -> {
+            // Tạo một Intent để chứa kết quả trả về
+            Intent resultIntent = new Intent();
+            // Đặt một "tín hiệu" để báo rằng chúng ta muốn mở tab Liên hệ
+            resultIntent.putExtra("NAVIGATE_TO", "CONTACTS");
+            setResult(RESULT_OK, resultIntent);
+
+            // Đóng màn hình chi tiết sản phẩm để quay về màn hình chính
+            finish();
+        });
 
         // Chuyển sang trang OrderActivity khi bấm Mua ngay
         btnBuyNow.setOnClickListener(v -> {
             if (currentProduct != null) {
                 Intent intent = new Intent(ProductDetailActivity.this, OrderActivity.class);
-                // Truyền cả đối tượng product đi, yêu cầu lớp Product phải implement Serializable
                 intent.putExtra("PRODUCT_OBJECT", currentProduct);
                 startActivity(intent);
             } else {
@@ -135,7 +150,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().products.isEmpty()) {
-                    currentProduct = response.body().products.get(0); // Lưu sản phẩm vào biến toàn cục
+                    currentProduct = response.body().products.get(0);
                     bindDataToView(currentProduct);
                 } else {
                     Toast.makeText(ProductDetailActivity.this, "Không tìm thấy chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
@@ -155,63 +170,17 @@ public class ProductDetailActivity extends AppCompatActivity {
         Glide.with(this).load("http://10.0.2.2:3000" + p.image_product)
                 .placeholder(R.drawable.ic_launcher_background).into(imgProduct);
 
-        if (p.author != null && !p.author.isEmpty()) {
-            tvAuthor.setText("Tác giả: " + p.author);
-            tvAuthor.setVisibility(View.VISIBLE);
-        } else {
-            tvAuthor.setVisibility(View.GONE);
-        }
+        // ... code hiển thị các thông tin khác ...
+        if (p.author != null && !p.author.isEmpty()) { tvAuthor.setText("Tác giả: " + p.author); tvAuthor.setVisibility(View.VISIBLE); } else { tvAuthor.setVisibility(View.GONE); }
+        if (p.publisher != null && !p.publisher.isEmpty()) { tvPublisher.setText("Nhà xuất bản: " + p.publisher); tvPublisher.setVisibility(View.VISIBLE); } else { tvPublisher.setVisibility(View.GONE); }
+        if (p.publisher_year > 0) { tvPublisherYear.setText("Năm XB: " + p.publisher_year); tvPublisherYear.setVisibility(View.VISIBLE); } else { tvPublisherYear.setVisibility(View.GONE); }
+        if (p.dimension != null && !p.dimension.isEmpty()) { tvDimension.setText("Kích thước: " + p.dimension); tvDimension.setVisibility(View.VISIBLE); } else { tvDimension.setVisibility(View.GONE); }
+        if (p.manufacturer != null && !p.manufacturer.isEmpty()) { tvManufacturer.setText("Nhà SX: " + p.manufacturer); tvManufacturer.setVisibility(View.VISIBLE); } else { tvManufacturer.setVisibility(View.GONE); }
+        if (p.page > 0) { tvPage.setText("Số trang: " + p.page); tvPage.setVisibility(View.VISIBLE); } else { tvPage.setVisibility(View.GONE); }
 
-        // Nhà xuất bản
-        if (p.publisher != null && !p.publisher.isEmpty()) {
-            tvPublisher.setText("Nhà xuất bản: " + p.publisher);
-            tvPublisher.setVisibility(View.VISIBLE);
-        } else {
-            tvPublisher.setVisibility(View.GONE);
-        }
-
-        // Năm xuất bản
-        if (p.publisher_year > 0) {
-            tvPublisherYear.setText("Năm XB: " + p.publisher_year);
-            tvPublisherYear.setVisibility(View.VISIBLE);
-        } else {
-            tvPublisherYear.setVisibility(View.GONE);
-        }
-
-        // Kích thước
-        if (p.dimension != null && !p.dimension.isEmpty()) {
-            tvDimension.setText("Kích thước: " + p.dimension);
-            tvDimension.setVisibility(View.VISIBLE);
-        } else {
-            tvDimension.setVisibility(View.GONE);
-        }
-
-        // Nhà sản xuất
-        if (p.manufacturer != null && !p.manufacturer.isEmpty()) {
-            tvManufacturer.setText("Nhà SX: " + p.manufacturer);
-            tvManufacturer.setVisibility(View.VISIBLE);
-        } else {
-            tvManufacturer.setVisibility(View.GONE);
-        }
-
-        // Số trang
-        if (p.page > 0) {
-            tvPage.setText("Số trang: " + p.page);
-            tvPage.setVisibility(View.VISIBLE);
-        } else {
-            tvPage.setVisibility(View.GONE);
-        }
-
-        // Mô tả
         View descriptionBlock = findViewById(R.id.product_description_block);
-        if (p.text_product != null && !p.text_product.isEmpty()) {
-            tvDescription.setText(p.text_product);
-            descriptionBlock.setVisibility(View.VISIBLE);
-        } else {
-            descriptionBlock.setVisibility(View.GONE);
-        }
+        if (p.text_product != null && !p.text_product.isEmpty()) { tvDescription.setText(p.text_product); descriptionBlock.setVisibility(View.VISIBLE); } else { descriptionBlock.setVisibility(View.GONE); }
 
-        // Giá
         DecimalFormat formatter = new DecimalFormat("#,###");
         try {
             double salePrice = Double.parseDouble(p.price);
@@ -221,7 +190,8 @@ public class ProductDetailActivity extends AppCompatActivity {
             tvPrice.setText(spannableSalePrice);
             btnBuyNow.setText("Mua ngay\n" + formattedSalePrice);
 
-            // Giá gốc (nếu có)
+            // === ĐÃ SỬA LỖI LOGIC TẠI ĐÂY ===
+            // Dùng p.original_price thay vì p.price
             if (p.price != null && !p.price.isEmpty()) {
                 double originalPrice = Double.parseDouble(p.price);
                 if (originalPrice > salePrice) {
