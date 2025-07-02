@@ -12,6 +12,8 @@ import com.example.tllttbdd.data.model.ProductSearchResponse;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.ProductApi;
 import java.util.List;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,8 +43,17 @@ public class ProductSearchActivity extends AppCompatActivity {
             public void onResponse(Call<ProductSearchResponse> call, Response<ProductSearchResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Product> products = response.body().products;
-                    adapter = new ProductAdapter(products);
-                    recyclerView.setAdapter(adapter);
+                    if (products == null || products.isEmpty()) {
+                        // Nếu backend trả về message thì lấy ra, không thì tự tạo
+                        String message = "Không có dữ liệu cho từ khóa \"" + query + "\"";
+                        if (response.body() instanceof Map && ((Map)response.body()).containsKey("message")) {
+                            message = ((Map)response.body()).get("message").toString();
+                        }
+                        Toast.makeText(ProductSearchActivity.this, message, Toast.LENGTH_SHORT).show();
+                    } else {
+                        adapter = new ProductAdapter(products);
+                        recyclerView.setAdapter(adapter);
+                    }
                 } else {
                     Toast.makeText(ProductSearchActivity.this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
                 }
