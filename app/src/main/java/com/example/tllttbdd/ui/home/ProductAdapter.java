@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +46,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(holder.image);
+
+        // Thêm sự kiện click
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), ProductDetailActivity.class);
+            intent.putExtra("PRODUCT_ID", p.id_product);
+            holder.itemView.getContext().startActivity(intent);
+        });
     }
 
     @Override

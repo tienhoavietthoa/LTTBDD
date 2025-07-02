@@ -1,29 +1,31 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="end"
     android:paddingVertical="6dp"
     android:paddingHorizontal="10dp">
 
-    <!-- Bong bóng tin nhắn căn phải, nền mờ, bo góc -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_message_bubble_glass"
+        android:background="@drawable/bg_message_bubble_white"
         android:padding="12dp"
-        android:layout_gravity="end">
+        android:layout_gravity="end"
+        android:layout_weight="0.8"> <!-- chiếm 80% chiều ngang, luôn đều -->
 
         <TextView
             android:id="@+id/txtContent"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nội dung"
             android:textSize="16sp"
-            android:textColor="#206A3C"
-            android:fontFamily="sans-serif"/>
+            android:textColor="#222"
+            android:fontFamily="sans-serif"
+            android:lineSpacingExtra="2dp"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="6dp">
@@ -32,20 +34,20 @@
                 android:id="@+id/txtDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ngày gửi"
+                android:text="2025-07-01 09:17:24"
                 android:textSize="12sp"
-                android:textColor="#778BC34A"
-                android:fontFamily="sans-serif"/>
+                android:textColor="#888"
+                android:fontFamily="sans-serif" />
 
             <TextView
                 android:id="@+id/txtPhoneContact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" | SDT"
+                android:text=" | 0987654321"
                 android:textSize="12sp"
-                android:textColor="#778BC34A"
+                android:textColor="#888"
                 android:fontFamily="sans-serif"
                 android:paddingStart="4dp"/>
         </LinearLayout>
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

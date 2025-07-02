@@ -11,5 +11,22 @@ public class Product {
     public String price;
     @SerializedName("image_product")
     public String image_product;
-    // Thêm các trường khác nếu cần (quantity, author, ...)
+    @SerializedName("quantity")
+    public int quantity;
+    @SerializedName("dimension")
+    public String dimension;
+    @SerializedName("manufacturer")
+    public String manufacturer;
+    @SerializedName("page")
+    public int page;
+    @SerializedName("author")
+    public String author;
+    @SerializedName("publisher")
+    public String publisher;
+    @SerializedName("publisher_year")
+    public int publisher_year;
+    @SerializedName("text_product")
+    public String text_product;
+    @SerializedName("id_category")
+    public int id_category;
 }

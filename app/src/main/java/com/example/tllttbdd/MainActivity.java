@@ -1,5 +1,6 @@
 package com.example.tllttbdd;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -53,7 +54,11 @@ public class MainActivity extends AppCompatActivity {
         // Xử lý sự kiện tìm kiếm khi bấm nút tìm kiếm
         btnSearch.setOnClickListener(v -> {
             String query = searchBox.getText().toString().trim();
-            // TODO: Xử lý tìm kiếm với giá trị query
+            if (!query.isEmpty()) {
+                Intent intent = new Intent(MainActivity.this, com.example.tllttbdd.ui.home.ProductSearchActivity.class);
+                intent.putExtra("QUERY", query);
+                startActivity(intent);
+            }
         });
     }
 }
