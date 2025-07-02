@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.tllttbdd.data.model.Category;
 import com.example.tllttbdd.data.model.CategoryResponse;
@@ -28,7 +29,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        binding.recyclerCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerCategories.setLayoutManager(new GridLayoutManager(getContext(),2));
         adapter = new CategoryAdapter(categoryList, category -> {
             // Khi nhấn vào 1 loại, mở ProductByCategoryActivity
             Intent intent = new Intent(getContext(), ProductByCategoryActivity.class);
