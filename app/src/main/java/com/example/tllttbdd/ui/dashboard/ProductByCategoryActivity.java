@@ -1,5 +1,6 @@
 package com.example.tllttbdd.ui.dashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
@@ -14,6 +15,8 @@ import com.example.tllttbdd.data.model.ProductResponse;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.ProductApi;
 import com.example.tllttbdd.ui.home.ProductAdapter;
+import com.example.tllttbdd.ui.home.ProductDetailActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
@@ -42,6 +45,11 @@ public class ProductByCategoryActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerProductsByCategory);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ProductAdapter(productList);
+        adapter.setOnItemClickListener(product -> {
+            Intent intent = new Intent(ProductByCategoryActivity.this, ProductDetailActivity.class);
+            intent.putExtra("PRODUCT_ID", product.id_product);
+            startActivity(intent);
+        });
         recyclerView.setAdapter(adapter);
 
         int categoryId = getIntent().getIntExtra("CATEGORY_ID", -1);
