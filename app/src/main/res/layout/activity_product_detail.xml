@@ -149,6 +149,7 @@
                         app:layout_constraintTop_toBottomOf="@id/tvProductPriceDetail"
                         tools:text="tên sản phẩm" />
 
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -183,14 +184,6 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="16dp"
                         android:background="#E0E0E0" />
-
-                    <TextView
-                        android:id="@+id/tvProductAuthorDetail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="Tác giả: " />
-
                     <TextView
                         android:id="@+id/tvProductDescDetail"
                         android:layout_width="wrap_content"
@@ -199,6 +192,49 @@
                         android:lineSpacingExtra="4dp"
                         android:textSize="16sp"
                         tools:text="Mô tả sản phẩm" />
+                    <TextView
+                        android:id="@+id/tvProductAuthorDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        tools:text="Tác giả: " />
+
+                    <TextView
+                        android:id="@+id/tvProductPublisher"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        tools:text="Nhà xuất bản: " />
+
+                    <TextView
+                        android:id="@+id/tvProductPublisherYear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        tools:text="Năm XB: " />
+
+                    <TextView
+                        android:id="@+id/tvProductDimension"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        tools:text="Kích thước: " />
+
+                    <TextView
+                        android:id="@+id/tvProductManufacturer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        tools:text="Nhà SX: " />
+
+                    <TextView
+                        android:id="@+id/tvProductPage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        tools:text="Số trang: " />
+
+
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

@@ -40,13 +40,12 @@ public class ProductDetailActivity extends AppCompatActivity {
     private static final String KEY_USER_ID = "id_login";
 
     private ImageView imgProduct;
-    private TextView tvName, tvPrice, tvAuthor, tvDescription, tvOriginalPrice;
+    private TextView tvName, tvPrice, tvAuthor, tvDescription, tvOriginalPrice,tvPublisher,tvPublisherYear,tvDimension,
+            tvManufacturer,tvPage;
     private LinearLayout layoutBtnAddToCart, btnChatNow;
     private Button btnBuyNow;
     private ImageButton btnBack;
-
     private Product currentProduct; // Lưu trữ sản phẩm hiện tại để các listener có thể dùng
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +62,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             finish();
         }
     }
-
     private void initViews() {
         imgProduct = findViewById(R.id.imgProductDetail);
         tvName = findViewById(R.id.tvProductNameDetail);
@@ -71,6 +69,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvAuthor = findViewById(R.id.tvProductAuthorDetail);
         tvDescription = findViewById(R.id.tvProductDescDetail);
         tvOriginalPrice = findViewById(R.id.tvOriginalPrice);
+        tvPublisher = findViewById(R.id.tvProductPublisher);
+        tvPublisherYear = findViewById(R.id.tvProductPublisherYear);
+        tvDimension = findViewById(R.id.tvProductDimension);
+        tvManufacturer = findViewById(R.id.tvProductManufacturer);
+        tvPage = findViewById(R.id.tvProductPage);
         layoutBtnAddToCart = findViewById(R.id.layoutBtnAddToCart);
         btnBuyNow = findViewById(R.id.btnBuyNow);
         btnBack = findViewById(R.id.btnBack);
@@ -149,7 +152,8 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void bindDataToView(Product p) {
         tvName.setText(p.name_product);
-        Glide.with(this).load("http://10.0.2.2:3000" + p.image_product).placeholder(R.drawable.ic_launcher_background).into(imgProduct);
+        Glide.with(this).load("http://10.0.2.2:3000" + p.image_product)
+                .placeholder(R.drawable.ic_launcher_background).into(imgProduct);
 
         if (p.author != null && !p.author.isEmpty()) {
             tvAuthor.setText("Tác giả: " + p.author);
@@ -158,6 +162,47 @@ public class ProductDetailActivity extends AppCompatActivity {
             tvAuthor.setVisibility(View.GONE);
         }
 
+        // Nhà xuất bản
+        if (p.publisher != null && !p.publisher.isEmpty()) {
+            tvPublisher.setText("Nhà xuất bản: " + p.publisher);
+            tvPublisher.setVisibility(View.VISIBLE);
+        } else {
+            tvPublisher.setVisibility(View.GONE);
+        }
+
+        // Năm xuất bản
+        if (p.publisher_year > 0) {
+            tvPublisherYear.setText("Năm XB: " + p.publisher_year);
+            tvPublisherYear.setVisibility(View.VISIBLE);
+        } else {
+            tvPublisherYear.setVisibility(View.GONE);
+        }
+
+        // Kích thước
+        if (p.dimension != null && !p.dimension.isEmpty()) {
+            tvDimension.setText("Kích thước: " + p.dimension);
+            tvDimension.setVisibility(View.VISIBLE);
+        } else {
+            tvDimension.setVisibility(View.GONE);
+        }
+
+        // Nhà sản xuất
+        if (p.manufacturer != null && !p.manufacturer.isEmpty()) {
+            tvManufacturer.setText("Nhà SX: " + p.manufacturer);
+            tvManufacturer.setVisibility(View.VISIBLE);
+        } else {
+            tvManufacturer.setVisibility(View.GONE);
+        }
+
+        // Số trang
+        if (p.page > 0) {
+            tvPage.setText("Số trang: " + p.page);
+            tvPage.setVisibility(View.VISIBLE);
+        } else {
+            tvPage.setVisibility(View.GONE);
+        }
+
+        // Mô tả
         View descriptionBlock = findViewById(R.id.product_description_block);
         if (p.text_product != null && !p.text_product.isEmpty()) {
             tvDescription.setText(p.text_product);
@@ -166,6 +211,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             descriptionBlock.setVisibility(View.GONE);
         }
 
+        // Giá
         DecimalFormat formatter = new DecimalFormat("#,###");
         try {
             double salePrice = Double.parseDouble(p.price);
@@ -175,8 +221,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             tvPrice.setText(spannableSalePrice);
             btnBuyNow.setText("Mua ngay\n" + formattedSalePrice);
 
-            // === ĐÃ SỬA LỖI LOGIC TẠI ĐÂY ===
-            // Dùng p.original_price thay vì p.price
+            // Giá gốc (nếu có)
             if (p.price != null && !p.price.isEmpty()) {
                 double originalPrice = Double.parseDouble(p.price);
                 if (originalPrice > salePrice) {
