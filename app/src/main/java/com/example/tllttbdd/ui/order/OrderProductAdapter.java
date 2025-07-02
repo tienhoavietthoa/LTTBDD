@@ -21,7 +21,8 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
+        // Đổi sang layout mới cho trang thanh toán!
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order_product, parent, false);
         return new ViewHolder(v);
     }
     @Override
