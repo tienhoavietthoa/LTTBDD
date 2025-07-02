@@ -29,7 +29,7 @@
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
         <activity android:name=".ui.home.ProductDetailActivity" />
-
+        <activity android:name=".ui.dashboard.ProductByCategoryActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
