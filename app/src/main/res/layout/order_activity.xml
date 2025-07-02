@@ -131,8 +131,28 @@
                 android:padding="8dp"
                 android:textSize="15sp"
                 android:layout_marginBottom="8dp"/>
-            <EditText android:id="@+id/editAddress"
-                android:hint="Địa chỉ nhận hàng"
+            <!-- Thay thế EditText địa chỉ cũ bằng đoạn này trong order_activity.xml -->
+            <Spinner
+                android:id="@+id/spinnerCity"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spinnerDistrict"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spinnerWard"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/editDetailAddress"
+                android:hint="Số nhà, tên đường..."
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@android:drawable/edit_text"

@@ -2,15 +2,18 @@ package com.example.tllttbdd.ui.order;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
 import android.widget.ImageButton;
+import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,24 +27,35 @@ import com.example.tllttbdd.data.model.CartItem;
 import com.example.tllttbdd.data.model.Product;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.OrderApi;
+import com.example.tllttbdd.data.model.Province;
+import com.example.tllttbdd.data.model.District;
+import com.example.tllttbdd.data.model.Ward;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class OrderActivity extends AppCompatActivity {
-    private EditText editName, editPhone, editAddress;
+    private EditText editName, editPhone, editDetailAddress;
     private RadioGroup radioPayment;
     private ImageView imgQR;
     private TextView orderTotal;
     private Button btnOrder;
     private RecyclerView orderProductRecycler;
     private ArrayList<CartItem> cartItemsToOrder;
+    private Spinner spinnerCity, spinnerDistrict, spinnerWard;
     private ImageButton btnBack;
+
+    private List<Province> provinceList = new ArrayList<>();
+    private ArrayAdapter<String> cityAdapter, districtAdapter, wardAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +63,7 @@ public class OrderActivity extends AppCompatActivity {
         setContentView(R.layout.order_activity);
 
         initViews();
+        setupAddressSpinners();
         handleIncomingIntent();
         setupListeners();
     }
@@ -56,7 +71,10 @@ public class OrderActivity extends AppCompatActivity {
     private void initViews() {
         editName = findViewById(R.id.editName);
         editPhone = findViewById(R.id.editPhone);
-        editAddress = findViewById(R.id.editAddress);
+        spinnerCity = findViewById(R.id.spinnerCity);
+        spinnerDistrict = findViewById(R.id.spinnerDistrict);
+        spinnerWard = findViewById(R.id.spinnerWard);
+        editDetailAddress = findViewById(R.id.editDetailAddress);
         radioPayment = findViewById(R.id.radioPayment);
         imgQR = findViewById(R.id.imgQR);
         orderTotal = findViewById(R.id.orderTotal);
@@ -64,8 +82,56 @@ public class OrderActivity extends AppCompatActivity {
         orderProductRecycler = findViewById(R.id.orderProductRecycler);
         btnBack = findViewById(R.id.btnBack);
 
-        // Nút back - quay về trang trước
         btnBack.setOnClickListener(v -> finish());
+    }
+
+    private void setupAddressSpinners() {
+        // Đọc file JSON địa chỉ từ assets
+        String json = loadJSONFromAsset("provinces.json");
+        if (json != null) {
+            provinceList = new Gson().fromJson(json, new TypeToken<List<Province>>(){}.getType());
+        }
+
+        // Fill city spinner
+        List<String> cityNames = new ArrayList<>();
+        for (Province p : provinceList) cityNames.add(p.name);
+        cityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cityNames);
+        cityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCity.setAdapter(cityAdapter);
+
+        // Khi chọn city, fill district
+        spinnerCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Province selectedProvince = provinceList.get(position);
+                List<String> districtNames = new ArrayList<>();
+                for (District d : selectedProvince.districts) districtNames.add(d.name);
+                districtAdapter = new ArrayAdapter<>(OrderActivity.this, android.R.layout.simple_spinner_item, districtNames);
+                districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerDistrict.setAdapter(districtAdapter);
+                // Reset ward spinner
+                spinnerWard.setAdapter(null);
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Khi chọn district, fill ward
+        spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int cityPos = spinnerCity.getSelectedItemPosition();
+                if (cityPos < 0) return;
+                Province selectedProvince = provinceList.get(cityPos);
+                if (position < 0 || position >= selectedProvince.districts.size()) return;
+                District selectedDistrict = selectedProvince.districts.get(position);
+                List<String> wardNames = new ArrayList<>();
+                for (Ward w : selectedDistrict.wards) wardNames.add(w.name);
+                wardAdapter = new ArrayAdapter<>(OrderActivity.this, android.R.layout.simple_spinner_item, wardNames);
+                wardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerWard.setAdapter(wardAdapter);
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
     private void handleIncomingIntent() {
@@ -134,10 +200,22 @@ public class OrderActivity extends AppCompatActivity {
     private void placeOrder() {
         String name = editName.getText().toString().trim();
         String phone = editPhone.getText().toString().trim();
-        String address = editAddress.getText().toString().trim();
+        String detail = editDetailAddress.getText().toString().trim();
 
-        if (name.isEmpty() || phone.isEmpty() || address.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đủ thông tin giao hàng!", Toast.LENGTH_SHORT).show();
+        String city = spinnerCity.getSelectedItem() != null ? spinnerCity.getSelectedItem().toString() : "";
+        String district = spinnerDistrict.getSelectedItem() != null ? spinnerDistrict.getSelectedItem().toString() : "";
+        String ward = spinnerWard.getSelectedItem() != null ? spinnerWard.getSelectedItem().toString() : "";
+
+        String address = detail + ", " + ward + ", " + district + ", " + city;
+
+        if (name.isEmpty() || phone.isEmpty() || detail.isEmpty() || city.isEmpty() || district.isEmpty() || ward.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập/chọn đủ thông tin giao hàng!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra số điện thoại đủ 10 số
+        if (!phone.matches("^0\\d{9}$")) {
+            Toast.makeText(this, "Số điện thoại phải đủ 10 số và bắt đầu bằng số 0!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -175,5 +253,33 @@ public class OrderActivity extends AppCompatActivity {
                         Toast.makeText(OrderActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    // Đọc file JSON từ assets
+    private String loadJSONFromAsset(String filename) {
+        try {
+            InputStream is = getAssets().open(filename);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            return new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    // Các class mẫu cho địa chỉ
+    public static class Province {
+        public String name;
+        public List<District> districts;
+    }
+    public static class District {
+        public String name;
+        public List<Ward> wards;
+    }
+    public static class Ward {
+        public String name;
     }
 }
