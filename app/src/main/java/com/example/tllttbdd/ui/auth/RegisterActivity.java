@@ -59,6 +59,19 @@ public class RegisterActivity extends AppCompatActivity {
                 tvResult.setText("Vui lòng nhập đầy đủ thông tin!");
                 return;
             }
+
+            // Kiểm tra số điện thoại Việt Nam: 10 số, bắt đầu bằng 0
+            if (!phone.matches("^0\\d{9}$")) {
+                tvResult.setText("Số điện thoại phải đủ 10 số và bắt đầu bằng 0!");
+                return;
+            }
+
+            // Kiểm tra mật khẩu: ít nhất 10 ký tự, có cả số và chữ
+            if (password.length() < 10 || !password.matches(".*[a-zA-Z].*") || !password.matches(".*\\d.*")) {
+                tvResult.setText("Mật khẩu phải có ít nhất 10 ký tự, bao gồm cả chữ và số!");
+                return;
+            }
+
             authViewModel.register(username, password, phone);
         });
 
