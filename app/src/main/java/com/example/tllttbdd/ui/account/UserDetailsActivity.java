@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.button.MaterialButton;
@@ -44,6 +45,8 @@ public class UserDetailsActivity extends AppCompatActivity {
         // Các nút hành động giờ là View (vì chúng là RelativeLayout)
         btnEdit = findViewById(R.id.btnEdit);
         btnChangePassword = findViewById(R.id.btnChangePassword);
+        ImageButton btnReturn = findViewById(R.id.btnReturn);
+        btnReturn.setOnClickListener(v -> finish());
 
         // Các nút ở dưới là MaterialButton
         btnLogout = findViewById(R.id.btnLogout);

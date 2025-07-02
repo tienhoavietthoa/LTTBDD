@@ -20,6 +20,16 @@
             android:gravity="center_horizontal"
             android:background="@color/plant_green_darker">
 
+            <ImageButton
+                android:id="@+id/btnReturn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="start"
+                android:background="@android:color/transparent"
+                android:src="@drawable/btn_return"
+                android:contentDescription="Quay lại"
+                android:layout_marginBottom="16dp" />
+
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageAvatar"
                 android:layout_width="96dp"
@@ -75,7 +85,11 @@
                 android:paddingVertical="8dp">
 
                 <LinearLayout style="@style/UserInfoRow">
-                    <ImageView style="@style/UserInfoIcon" android:src="@drawable/ic_phone_outline_24" />
+
+                    <ImageView
+                        style="@style/UserInfoIcon"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_phone_outline_24" />
                     <TextView android:id="@+id/tvPhone" style="@style/UserInfoText" tools:text="Số điện thoại: 123" />
                 </LinearLayout>
 
