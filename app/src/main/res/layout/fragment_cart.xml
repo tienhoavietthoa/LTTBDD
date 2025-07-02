@@ -1,61 +1,61 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="0dp">
 
-    android:padding="12dp">
-
+    <!-- Header -->
     <TextView
         android:id="@+id/cartTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="----------Giỏ hàng của bạn----------"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:text="Giỏ hàng"
+        android:textSize="22sp"
         android:textColor="#222"
-        android:fontFamily="sans-serif-medium"
         android:gravity="center"
-        android:paddingBottom="12dp"/>
+        android:paddingTop="18dp"
+        android:paddingBottom="14dp"
+        android:background="@android:color/white"/>
 
+
+
+    <!-- Danh sách sản phẩm -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cartRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@drawable/bg_cart_recycler_glass"
-        android:padding="6dp"/>
+        android:paddingVertical="8dp"
+        android:background="@android:color/white"/>
 
+    <!-- Tổng tiền & Thanh toán -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end|center_vertical"
-        android:paddingTop="10dp"
-        android:paddingBottom="4dp">
+        android:background="#EFFDEF"
+        android:padding="12dp"
+        android:gravity="center_vertical|end">
 
         <TextView
             android:id="@+id/cartTotal"
-            android:layout_width="wrap_content"
+            android:layout_width="176dp"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:paddingEnd="18dp"
+            android:paddingEnd="20dp"
             android:text="Tổng: 0 đ"
             android:textColor="#218C4D"
             android:textSize="18sp"
             android:textStyle="bold" />
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/btnCheckout"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="Thanh toán"
-        android:textAllCaps="false"
-        android:backgroundTint="#37B274"
-        android:textColor="#FFFFFF"
-        android:textSize="17sp"
-        android:fontFamily="sans-serif-medium"
-        android:elevation="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"/>
+        <Button
+            android:id="@+id/btnCheckout"
+            android:layout_width="160dp"
+            android:layout_height="42dp"
+            android:text="Thanh toán"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:backgroundTint="#37B274"
+            android:fontFamily="sans-serif-medium"
+            android:elevation="2dp"/>
+    </LinearLayout>
 </LinearLayout>

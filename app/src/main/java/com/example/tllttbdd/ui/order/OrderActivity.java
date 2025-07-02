@@ -10,6 +10,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,14 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.ApiResponse;
 import com.example.tllttbdd.data.model.CartItem;
-import com.example.tllttbdd.data.model.Product; // Import lớp Product
+import com.example.tllttbdd.data.model.Product;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.OrderApi;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,7 +40,8 @@ public class OrderActivity extends AppCompatActivity {
     private TextView orderTotal;
     private Button btnOrder;
     private RecyclerView orderProductRecycler;
-    private ArrayList<CartItem> cartItemsToOrder; // Đổi tên để rõ nghĩa hơn
+    private ArrayList<CartItem> cartItemsToOrder;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class OrderActivity extends AppCompatActivity {
         setContentView(R.layout.order_activity);
 
         initViews();
-        handleIncomingIntent(); // Xử lý dữ liệu đầu vào
+        handleIncomingIntent();
         setupListeners();
     }
 
@@ -61,30 +62,32 @@ public class OrderActivity extends AppCompatActivity {
         orderTotal = findViewById(R.id.orderTotal);
         btnOrder = findViewById(R.id.btnOrder);
         orderProductRecycler = findViewById(R.id.orderProductRecycler);
+        btnBack = findViewById(R.id.btnBack);
+
+        // Nút back - quay về trang trước
+        btnBack.setOnClickListener(v -> finish());
     }
 
     private void handleIncomingIntent() {
         cartItemsToOrder = new ArrayList<>();
         Intent intent = getIntent();
 
-        // Trường hợp 1: Nhận danh sách sản phẩm từ giỏ hàng
+        // Nhận danh sách sản phẩm từ giỏ hàng
         if (intent.hasExtra("selectedItems")) {
             ArrayList<CartItem> itemsFromCart = intent.getParcelableArrayListExtra("selectedItems");
             if (itemsFromCart != null && !itemsFromCart.isEmpty()) {
                 cartItemsToOrder.addAll(itemsFromCart);
             }
         }
-        // Trường hợp 2: Nhận một sản phẩm từ nút "Mua ngay"
+        // Nhận một sản phẩm từ nút "Mua ngay"
         else if (intent.hasExtra("PRODUCT_OBJECT")) {
             Product productFromDetail = (Product) intent.getSerializableExtra("PRODUCT_OBJECT");
             if (productFromDetail != null) {
-                // Chuyển đổi Product thành CartItem với số lượng là 1
                 CartItem singleItem = new CartItem(
                         productFromDetail.id_product,
                         productFromDetail.name_product,
-                        // Chuyển đổi giá từ String sang int/double
                         (int) Double.parseDouble(productFromDetail.price),
-                        productFromDetail.image_product, // Số lượng mặc định khi mua ngay là 1
+                        productFromDetail.image_product,
                         1
                 );
                 cartItemsToOrder.add(singleItem);
@@ -98,7 +101,7 @@ public class OrderActivity extends AppCompatActivity {
             return;
         }
 
-        // Sau khi có dữ liệu, hiển thị lên giao diện
+        // Hiển thị dữ liệu lên giao diện
         displayOrderData();
     }
 
@@ -161,7 +164,7 @@ public class OrderActivity extends AppCompatActivity {
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().success) {
                             Toast.makeText(OrderActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
-                            finish(); // Đóng màn hình sau khi đặt hàng thành công
+                            finish();
                         } else {
                             Toast.makeText(OrderActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
                         }
