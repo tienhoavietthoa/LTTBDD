@@ -8,41 +8,46 @@
     android:background="@drawable/bg2">
 
     <!-- Top bar: Logo trái - Ô tìm kiếm giữa - Nút tìm kiếm phải -->
+
+    <!-- Fragment content bên dưới top bar -->
+
     <LinearLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginTop="48dp"
+        android:background="@android:color/transparent"
         android:gravity="center_vertical"
-        android:layout_marginTop="44dp"
+        android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- Logo bên trái -->
         <ImageView
             android:id="@+id/logo"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/iconlg"
             android:layout_marginEnd="8dp"
-            android:contentDescription="Logo" />
+            android:contentDescription="Logo"
+            android:src="@drawable/iconlg" />
 
         <!-- Ô tìm kiếm ở giữa (luôn hiển thị) -->
+
+        <!-- Nút tìm kiếm bên phải -->
         <EditText
             android:id="@+id/search_box"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:hint="Tìm kiếm..."
             android:background="@drawable/search_box_bg"
+            android:hint="Tìm kiếm..."
             android:padding="10dp"
             android:visibility="visible" />
 
-        <!-- Nút tìm kiếm bên phải -->
         <ImageButton
             android:id="@+id/btn_search"
             android:layout_width="40dp"
@@ -53,7 +58,6 @@
 
     </LinearLayout>
 
-    <!-- Fragment content bên dưới top bar -->
     <fragment
         android:id="@+id/nav_host_fragment_activity_main"
         android:name="androidx.navigation.fragment.NavHostFragment"
