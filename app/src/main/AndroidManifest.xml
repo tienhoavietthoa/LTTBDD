@@ -44,7 +44,7 @@
         <activity android:name=".ui.account.EditProfileActivity" />
         <activity android:name=".ui.account.ChangePasswordActivity" />
         <activity android:name=".ui.home.ProductSearchActivity" />
-
+        <activity android:name=".ui.account.OrderDetailActivity" />
     </application>
 
 

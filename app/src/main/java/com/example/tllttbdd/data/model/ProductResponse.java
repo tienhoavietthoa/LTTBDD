@@ -1,7 +1,6 @@
 package com.example.tllttbdd.data.model;
 
-import java.util.List;
-
+import java.util.ArrayList;
 public class ProductResponse {
-    public List<Product> products;
+    public ArrayList<Product> products;
 }

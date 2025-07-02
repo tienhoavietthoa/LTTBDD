@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg">
+    android:background="@drawable/bg2">
 
     <!-- Top bar: Logo trái - Ô tìm kiếm giữa - Nút tìm kiếm phải -->
     <LinearLayout
