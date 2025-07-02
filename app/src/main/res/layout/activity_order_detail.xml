@@ -1,21 +1,144 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="12dp">
+    android:background="#F3F5F7">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/tvOrderInfo"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="0dp">
+
+        <!-- Header với nút Back -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="83dp"
+            android:background="#FFFFFF"
+            android:elevation="4dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="6dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Quay lại"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="#222" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Chi tiết đơn hàng"
+                android:textColor="#222"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Khối thông tin chung đơn hàng -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thông tin đơn hàng"
-            android:textStyle="bold"
-            android:padding="16dp"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerOrderDetail"
+            android:background="@drawable/bg_card_rounded"
+            android:orientation="vertical"
+            android:elevation="1dp"
+            android:padding="14dp"
+            android:layout_margin="14dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvOrderInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Thông tin đơn hàng"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#2b2b2b"
+                android:paddingBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tvOrderId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mã đơn: "/>
+            <TextView
+                android:id="@+id/tvOrderName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên: "/>
+            <TextView
+                android:id="@+id/tvOrderPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SĐT: "/>
+            <TextView
+                android:id="@+id/tvOrderAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Địa chỉ: "/>
+            <TextView
+                android:id="@+id/tvOrderTotalInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tổng: "
+                tools:ignore="DuplicateIds" />
+        </LinearLayout>
+
+        <!-- Khối sản phẩm -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card_rounded"
+            android:orientation="vertical"
+            android:elevation="1dp"
+            android:padding="10dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sản phẩm"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#2b2b2b"
+                android:paddingBottom="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerOrderDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
+        </LinearLayout>
+
+        <!-- Tổng tiền footer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end|center_vertical"
+            android:padding="14dp"
+            android:background="#FFFFFF"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:layout_marginBottom="24dp"
+            android:elevation="1dp">
+
+            <TextView
+                android:id="@+id/tvOrderTotalFooter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tổng: 0 đ"
+                android:textSize="17sp"
+                android:textColor="#218C4D"
+                android:textStyle="bold"
+                tools:ignore="DuplicateIds" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
