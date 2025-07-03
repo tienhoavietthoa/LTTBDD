@@ -23,26 +23,22 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        // Ánh xạ
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         edtPhone = findViewById(R.id.edtPhone);
         btnRegister = findViewById(R.id.btnRegister);
         tvResult = findViewById(R.id.tvResult);
-
-        // --- THÊM Ở ĐÂY ---
-        // Ánh xạ view cho nút quay về trang Đăng nhập
         btnGoToLogin = findViewById(R.id.btnGoToLogin);
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
-
         authViewModel.getRegisterResult().observe(this, registerResponse -> {
             if (registerResponse != null && registerResponse.success) {
                 Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
                 // Sau khi đăng ký thành công, quay về trang đăng nhập
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
-                finish(); // Đóng màn hình đăng ký
+                finish(); // Đóng
             } else if (registerResponse != null) {
                 tvResult.setText(registerResponse.error != null ? registerResponse.error : "Đăng ký thất bại!");
             } else {
@@ -59,14 +55,10 @@ public class RegisterActivity extends AppCompatActivity {
                 tvResult.setText("Vui lòng nhập đầy đủ thông tin!");
                 return;
             }
-
-            // Kiểm tra số điện thoại Việt Nam: 10 số, bắt đầu bằng 0
             if (!phone.matches("^0\\d{9}$")) {
                 tvResult.setText("Số điện thoại phải đủ 10 số và bắt đầu bằng 0!");
                 return;
             }
-
-            // Kiểm tra mật khẩu: ít nhất 10 ký tự, có cả số và chữ
             if (password.length() < 10 || !password.matches(".*[a-zA-Z].*") || !password.matches(".*\\d.*")) {
                 tvResult.setText("Mật khẩu phải có ít nhất 10 ký tự, bao gồm cả chữ và số!");
                 return;
@@ -74,11 +66,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             authViewModel.register(username, password, phone);
         });
-
-        // --- THÊM Ở ĐÂY ---
-        // Xử lý sự kiện khi người dùng nhấn vào link "Đăng nhập"
         btnGoToLogin.setOnClickListener(v -> {
-            // Đóng màn hình đăng ký hiện tại để quay về màn hình đăng nhập đã có sẵn
             finish();
         });
     }
