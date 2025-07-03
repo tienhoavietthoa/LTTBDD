@@ -2,11 +2,17 @@ package com.example.tllttbdd.data.repository;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.example.tllttbdd.data.model.LoginResponse;
+import com.example.tllttbdd.data.model.Order; // Import Order model
 import com.example.tllttbdd.data.model.User;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.AccountApi;
+
+import java.util.ArrayList; // Import ArrayList
+import java.util.List; // Import List
 import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,6 +25,9 @@ public class AccountRepository {
     private final MutableLiveData<Map<String, Object>> passwordResult = new MutableLiveData<>();
     private final MutableLiveData<Map<String, Object>> deleteResult = new MutableLiveData<>();
 
+    // --- THÊM MỚI: LiveData để chứa danh sách đơn hàng ---
+    private final MutableLiveData<List<Order>> orders = new MutableLiveData<>();
+
     public AccountRepository() {
         api = ApiClient.getClient().create(AccountApi.class);
     }
@@ -27,6 +36,11 @@ public class AccountRepository {
     public LiveData<Map<String, Object>> getUpdateResult() { return updateResult; }
     public LiveData<Map<String, Object>> getPasswordResult() { return passwordResult; }
     public LiveData<Map<String, Object>> getDeleteResult() { return deleteResult; }
+
+    // --- THÊM MỚI: Getter cho LiveData đơn hàng ---
+    public LiveData<List<Order>> getOrdersFromDatabase() {
+        return orders;
+    }
 
     public void fetchProfile(int idLogin) {
         Log.d("AccountRepository", "Fetching user profile for ID: " + idLogin);
@@ -38,12 +52,10 @@ public class AccountRepository {
                         user.postValue(response.body().user);
                         Log.d("AccountRepository", "User profile fetched successfully: " + response.body().user.name_information);
                     } else {
-                        // Trường hợp response.body() là null hoặc response.body().user là null
                         Log.e("AccountRepository", "Failed to fetch user profile: User object is null or response body is empty. Message: " + response.message());
                         user.postValue(null);
                     }
                 } else {
-                    // Trường hợp response không thành công (ví dụ: HTTP 404, 500)
                     Log.e("AccountRepository", "Failed to fetch user profile. HTTP Code: " + response.code() + ", Message: " + response.message());
                     user.postValue(null);
                 }
@@ -52,7 +64,7 @@ public class AccountRepository {
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Log.e("AccountRepository", "Error fetching user profile: " + t.getMessage());
-                user.postValue(null); // Nếu có lỗi, đặt user là null
+                user.postValue(null);
             }
         });
     }
@@ -62,8 +74,7 @@ public class AccountRepository {
             @Override
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 updateResult.postValue(response.body());
-                // Fetch lại profile mới nhất sau khi update
-                fetchProfile(idLogin);
+                fetchProfile(idLogin); // Fetch lại profile mới nhất sau khi update
             }
 
             @Override
@@ -78,8 +89,7 @@ public class AccountRepository {
             @Override
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 passwordResult.postValue(response.body());
-                // Fetch lại profile mới nhất sau khi đổi mật khẩu
-                fetchProfile(idLogin);
+                fetchProfile(idLogin); // Fetch lại profile mới nhất sau khi đổi mật khẩu
             }
 
             @Override
@@ -99,6 +109,29 @@ public class AccountRepository {
             @Override
             public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                 Log.e("AccountRepository", "Error deleting account: " + t.getMessage());
+            }
+        });
+    }
+
+    // --- THÊM MỚI: Phương thức để lấy danh sách đơn hàng ---
+    public void fetchOrders(int userId) { // Thêm userId nếu API yêu cầu
+        Log.d("AccountRepository", "Fetching orders for user ID: " + userId);
+        api.getOrders(userId).enqueue(new Callback<List<Order>>() {
+            @Override
+            public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    orders.postValue(response.body());
+                    Log.d("AccountRepository", "Orders fetched successfully. Count: " + response.body().size());
+                } else {
+                    Log.e("AccountRepository", "Failed to fetch orders. HTTP Code: " + response.code() + ", Message: " + response.message());
+                    orders.postValue(new ArrayList<>()); // Trả về danh sách rỗng nếu lỗi
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Order>> call, Throwable t) {
+                Log.e("AccountRepository", "Error fetching orders: " + t.getMessage());
+                orders.postValue(new ArrayList<>()); // Trả về danh sách rỗng nếu có lỗi mạng
             }
         });
     }

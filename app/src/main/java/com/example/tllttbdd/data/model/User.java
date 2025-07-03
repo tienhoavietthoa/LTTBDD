@@ -9,5 +9,29 @@ public class User {
     public String phone_information;
     public String email;
     public String date_of_birth;
-    // Thêm các trường khác nếu cần
+
+    // ✅ Thêm 2 trường mới để thống kê
+    private int totalOrders;
+    private int totalSpent;
+
+    // ✅ Getter và Setter cho thống kê
+    public int getTotalOrders() {
+        return totalOrders;
+    }
+
+    public void setTotalOrders(int totalOrders) {
+        this.totalOrders = totalOrders;
+    }
+
+    public int getTotalSpent() {
+        return totalSpent;
+    }
+
+    public void setTotalSpent(int totalSpent) {
+        this.totalSpent = totalSpent;
+    }
+
+    // ❗ Bạn có thể thêm constructor nếu cần, nhưng Firebase/Room cần constructor rỗng
+    public User() {
+    }
 }

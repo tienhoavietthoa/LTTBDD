@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log; // Import Log
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,12 +41,12 @@ public class ProductDetailActivity extends AppCompatActivity {
     private static final String KEY_USER_ID = "id_login";
 
     private ImageView imgProduct;
-    private TextView tvName, tvPrice, tvAuthor, tvDescription, tvOriginalPrice,tvPublisher,tvPublisherYear,tvDimension,
-            tvManufacturer,tvPage;
+    private TextView tvName, tvPrice, tvAuthor, tvDescription, tvOriginalPrice, tvPublisher, tvPublisherYear, tvDimension,
+            tvManufacturer, tvPage;
     private LinearLayout layoutBtnAddToCart, btnChatNow;
     private Button btnBuyNow;
     private ImageButton btnBack;
-    private Product currentProduct;
+    private Product currentProduct; // Giữ tham chiếu đến sản phẩm hiện tại
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,12 +56,27 @@ public class ProductDetailActivity extends AppCompatActivity {
         initViews();
         setupClickListeners();
 
-        int productId = getIntent().getIntExtra("PRODUCT_ID", -1);
-        if (productId != -1) {
-            fetchProductDetail(productId);
+        // --- THAY ĐỔI LỚN TẠI ĐÂY: Lấy đối tượng Product thay vì chỉ ID ---
+        currentProduct = (Product) getIntent().getSerializableExtra("product_detail"); // Lấy đối tượng Product
+
+        if (currentProduct != null) {
+            Log.d("ProductDetailActivity", "Received product: " + currentProduct.name_product + ", ID: " + currentProduct.id_product);
+            bindDataToView(currentProduct);
+            // Nếu bạn vẫn muốn fetch chi tiết đầy đủ từ API (ví dụ: để đảm bảo dữ liệu mới nhất),
+            // bạn có thể gọi fetchProductDetail(currentProduct.id_product) ở đây.
+            // Tuy nhiên, nếu đối tượng Product đã đầy đủ, không cần thiết.
+            // fetchProductDetail(currentProduct.id_product); // Chỉ gọi nếu cần cập nhật/lấy thêm dữ liệu
         } else {
-            Toast.makeText(this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
-            finish();
+            // Trường hợp không nhận được đối tượng Product, thử lấy ID (cho trường hợp từ HomeFragment)
+            int productId = getIntent().getIntExtra("PRODUCT_ID", -1);
+            if (productId != -1) {
+                Log.d("ProductDetailActivity", "Received PRODUCT_ID: " + productId + ". Fetching details from API.");
+                fetchProductDetail(productId); // Vẫn dùng fetchProductDetail nếu chỉ có ID
+            } else {
+                Log.e("ProductDetailActivity", "No product object or PRODUCT_ID received.");
+                Toast.makeText(this, "Không tìm thấy sản phẩm để hiển thị", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
@@ -88,19 +104,13 @@ public class ProductDetailActivity extends AppCompatActivity {
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
 
-        // === BẠN YÊU CẦU SỬA LẠI LOGIC NÚT CHAT NGAY TẠI ĐÂY ===
         btnChatNow.setOnClickListener(v -> {
-            // Tạo một Intent để chứa kết quả trả về
             Intent resultIntent = new Intent();
-            // Đặt một "tín hiệu" để báo rằng chúng ta muốn mở tab Liên hệ
             resultIntent.putExtra("NAVIGATE_TO", "CONTACTS");
             setResult(RESULT_OK, resultIntent);
-
-            // Đóng màn hình chi tiết sản phẩm để quay về màn hình chính
             finish();
         });
 
-        // Chuyển sang trang OrderActivity khi bấm Mua ngay
         btnBuyNow.setOnClickListener(v -> {
             if (currentProduct != null) {
                 Intent intent = new Intent(ProductDetailActivity.this, OrderActivity.class);
@@ -111,7 +121,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Xử lý Thêm vào giỏ hàng
         layoutBtnAddToCart.setOnClickListener(v -> {
             if (currentProduct == null) {
                 Toast.makeText(this, "Vui lòng chờ tải xong dữ liệu sản phẩm", Toast.LENGTH_SHORT).show();
@@ -144,22 +153,35 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
     }
 
+    // Phương thức này vẫn được giữ lại để dùng khi chỉ có ID sản phẩm (ví dụ từ HomeFragment)
     private void fetchProductDetail(int id) {
+        Log.d("ProductDetailActivity", "Fetching product detail from API for ID: " + id);
         ProductApi api = ApiClient.getClient().create(ProductApi.class);
         api.getProductDetail(id).enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().products.isEmpty()) {
                     currentProduct = response.body().products.get(0);
+                    Log.d("ProductDetailActivity", "API fetched product: " + currentProduct.name_product);
                     bindDataToView(currentProduct);
                 } else {
-                    Toast.makeText(ProductDetailActivity.this, "Không tìm thấy chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
+                    String errorBody = "";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorBody = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        Log.e("ProductDetailActivity", "Error reading errorBody: " + e.getMessage());
+                    }
+                    Log.e("ProductDetailActivity", "Failed to fetch product detail. Code: " + response.code() + ", Message: " + response.message() + ", Error Body: " + errorBody);
+                    Toast.makeText(ProductDetailActivity.this, "Không tìm thấy chi tiết sản phẩm từ API", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
             @Override
             public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
-                Toast.makeText(ProductDetailActivity.this, "Lỗi kết nối mạng", Toast.LENGTH_SHORT).show();
+                Log.e("ProductDetailActivity", "API call failed: " + t.getMessage(), t);
+                Toast.makeText(ProductDetailActivity.this, "Lỗi kết nối mạng khi tải chi tiết", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -170,7 +192,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         Glide.with(this).load("http://10.0.2.2:3000" + p.image_product)
                 .placeholder(R.drawable.ic_launcher_background).into(imgProduct);
 
-        // ... code hiển thị các thông tin khác ...
         if (p.author != null && !p.author.isEmpty()) { tvAuthor.setText("Tác giả: " + p.author); tvAuthor.setVisibility(View.VISIBLE); } else { tvAuthor.setVisibility(View.GONE); }
         if (p.publisher != null && !p.publisher.isEmpty()) { tvPublisher.setText("Nhà xuất bản: " + p.publisher); tvPublisher.setVisibility(View.VISIBLE); } else { tvPublisher.setVisibility(View.GONE); }
         if (p.publisher_year > 0) { tvPublisherYear.setText("Năm XB: " + p.publisher_year); tvPublisherYear.setVisibility(View.VISIBLE); } else { tvPublisherYear.setVisibility(View.GONE); }
@@ -192,8 +213,8 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             // === ĐÃ SỬA LỖI LOGIC TẠI ĐÂY ===
             // Dùng p.original_price thay vì p.price
-            if (p.price != null && !p.price.isEmpty()) {
-                double originalPrice = Double.parseDouble(p.price);
+            if (p.price != null && !p.price.isEmpty()) { // SỬA TỪ p.price THÀNH p.original_price
+                double originalPrice = Double.parseDouble(p.price); // SỬA TỪ p.price THÀNH p.original_price
                 if (originalPrice > salePrice) {
                     tvOriginalPrice.setText("đ" + formatter.format(originalPrice));
                     tvOriginalPrice.setPaintFlags(tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -205,6 +226,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 tvOriginalPrice.setVisibility(View.GONE);
             }
         } catch (NumberFormatException e) {
+            Log.e("ProductDetail", "Error parsing price: " + e.getMessage());
             tvPrice.setText(p.price);
             tvOriginalPrice.setVisibility(View.GONE);
         }
