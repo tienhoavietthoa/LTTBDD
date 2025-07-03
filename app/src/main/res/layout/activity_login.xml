@@ -89,31 +89,6 @@
                 android:textSize="14sp"
                 tools:text="Tên đăng nhập hoặc mật khẩu không đúng" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-
-                <CheckBox
-                    android:id="@+id/checkboxRememberMe"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="Ghi nhớ tôi"
-                    android:textColor="@color/plant_text_secondary"
-                    app:buttonTint="@color/plant_green_darker" />
-
-                <TextView
-                    android:id="@+id/textViewForgotPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:text="Quên mật khẩu?"
-                    android:textColor="@color/plant_green_darker"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"

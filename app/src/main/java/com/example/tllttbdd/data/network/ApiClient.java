@@ -7,7 +7,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 public class ApiClient {
     private static Retrofit retrofit = null;
-
     public static Retrofit getClient() {
         if (retrofit == null) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();

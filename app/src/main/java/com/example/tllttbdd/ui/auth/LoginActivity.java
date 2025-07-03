@@ -34,8 +34,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Đặt layout cho Activity
-        // Giả sử file layout của bạn tên là activity_login.xml
+
         setContentView(R.layout.activity_login);
 
         edtUsername = findViewById(R.id.edtUsername);
