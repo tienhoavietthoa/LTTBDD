@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.Order;
+import java.text.DecimalFormat; // MỚI: Import để định dạng số
 import java.util.List;
 
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.OrderViewHolder> {
@@ -33,9 +34,22 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orders.get(position);
+
+        // Gán dữ liệu vào ViewHolder
         holder.tvOrderId.setText("Mã đơn: " + order.id_order);
         holder.tvOrderDate.setText("Ngày: " + order.date_order);
-        holder.tvOrderTotal.setText("Tổng: " + order.total + "đ");
+
+        // === SỬA LẠI TẠI ĐÂY: ÁP DỤNG ĐỊNH DẠNG TIỀN TỆ ===
+        try {
+            DecimalFormat formatter = new DecimalFormat("#,###");
+            String formattedTotal = formatter.format(order.total);
+            holder.tvOrderTotal.setText("Tổng: " + formattedTotal + "đ");
+        } catch (Exception e) {
+            // Fallback nếu có lỗi (ví dụ: order.total không phải là số)
+            holder.tvOrderTotal.setText("Tổng: " + order.total + "đ");
+        }
+
+        // Gán sự kiện click
         holder.itemView.setOnClickListener(v -> listener.onOrderClick(order));
     }
 

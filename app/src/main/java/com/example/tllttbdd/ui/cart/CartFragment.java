@@ -11,8 +11,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.widget.Toast;
+
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.example.tllttbdd.databinding.FragmentCartBinding;
 import com.example.tllttbdd.data.model.CartItem;
@@ -50,7 +53,9 @@ public class CartFragment extends Fragment {
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
 
         cartViewModel.getCartItems().observe(getViewLifecycleOwner(), items -> adapter.setItems(items));
-        cartViewModel.getTotal().observe(getViewLifecycleOwner(), total -> binding.cartTotal.setText("Tổng: " + total + " đ"));
+        cartViewModel.getTotal().observe(getViewLifecycleOwner(), total ->
+                binding.cartTotal.setText("Tổng: " + NumberFormat.getInstance(new Locale("vi", "VN")).format(total) + " ₫")
+        );
 
         cartViewModel.fetchCart(requireContext());
 

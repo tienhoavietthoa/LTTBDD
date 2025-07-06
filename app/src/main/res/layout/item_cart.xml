@@ -1,24 +1,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:padding="10dp"
     android:background="@android:color/white"
     android:gravity="center_vertical"
     android:layout_marginBottom="8dp"
-    android:elevation="2dp">
+    android:elevation="1dp">
 
     <!-- Ảnh sản phẩm -->
     <ImageView
         android:id="@+id/cartItemImage"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_marginEnd="12dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_background"
-        android:background="@drawable/bg_item_image_glass" />
+        android:background="@drawable/bg_item_image_glass"
+        android:src="@drawable/ic_launcher_background" />
 
     <!-- Thông tin & thao tác -->
     <LinearLayout
@@ -43,7 +41,7 @@
             android:id="@+id/cartItemPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="120000 đ"
+            android:text="120.000 ₫"
             android:textColor="#218C4D"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -60,14 +58,13 @@
 
             <ImageButton
                 android:id="@+id/btnDecrease"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="@drawable/bg_round_button"
                 android:src="@drawable/ic_remove"
                 android:contentDescription="Giảm"
                 android:tint="#43A047"
-                android:layout_marginEnd="4dp"
-                tools:ignore="UseAppTint" />
+                android:layout_marginEnd="4dp" />
 
             <TextView
                 android:id="@+id/txtQuantity"
@@ -83,14 +80,13 @@
 
             <ImageButton
                 android:id="@+id/btnIncrease"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="@drawable/bg_round_button"
                 android:src="@drawable/ic_add"
                 android:contentDescription="Tăng"
                 android:layout_marginStart="4dp"
-                app:tint="#43A047"
-                tools:ignore="UseAppTint" />
+                android:tint="#43A047" />
 
             <Space
                 android:layout_width="0dp"
@@ -105,8 +101,7 @@
                 android:src="@drawable/ic_delete"
                 android:contentDescription="Xóa"
                 android:layout_marginStart="8dp"
-                app:tint="#fff"
-                tools:ignore="UseAppTint" />
+                android:tint="#fff" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
