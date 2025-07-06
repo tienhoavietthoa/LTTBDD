@@ -1,0 +1,69 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#F5F8FF"
+    android:padding="0dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="350dp"
+        android:layout_height="450dp"
+        android:background="@drawable/bg_vnpay_otp_card"
+        android:padding="28dp"
+        android:elevation="4dp"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_vnpay_lock"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="OTP"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xác thực giao dịch"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#1A237E"
+            android:layout_marginBottom="6dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nhập mã OTP xác thực"
+            android:textSize="15sp"
+            android:textColor="#444"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/editOtp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_otp_edittext"
+            android:hint="Nhập mã OTP"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginBottom="18dp"/>
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Xác nhận"
+            android:textAllCaps="false"
+            android:textSize="17sp"
+            android:backgroundTint="#1976D2"
+            android:textColor="#fff"
+            android:layout_marginTop="4dp"
+            android:elevation="2dp"/>
+    </LinearLayout>
+</LinearLayout>

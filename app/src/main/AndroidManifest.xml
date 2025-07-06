@@ -45,6 +45,7 @@
         <activity android:name=".ui.account.ChangePasswordActivity" />
         <activity android:name=".ui.home.ProductSearchActivity" />
         <activity android:name=".ui.account.OrderDetailActivity" />
+        <activity android:name=".ui.order.VnpayOtpActivity" />
     </application>
 
 
