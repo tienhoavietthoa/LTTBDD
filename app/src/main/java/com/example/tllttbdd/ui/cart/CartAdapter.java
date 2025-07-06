@@ -16,7 +16,9 @@ import com.bumptech.glide.Glide;
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.CartItem;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
     public interface OnCartActionListener {
@@ -49,7 +51,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
         CartItem item = items.get(position);
         holder.name.setText(item.name);
-        holder.price.setText(item.price + " đ");
+        holder.price.setText(NumberFormat.getInstance(new Locale("vi", "VN")).format(item.price) + " ₫");
         holder.txtQuantity.setText(String.valueOf(item.quantity)); // Đúng chỗ!
 
         Glide.with(holder.image.getContext())
