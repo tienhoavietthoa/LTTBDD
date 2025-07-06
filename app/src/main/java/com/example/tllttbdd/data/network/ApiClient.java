@@ -7,6 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 public class ApiClient {
     private static Retrofit retrofit = null;
+
     public static Retrofit getClient() {
         if (retrofit == null) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -23,5 +24,9 @@ public class ApiClient {
                     .build();
         }
         return retrofit;
+    }
+
+    public static AuthApi getAuthApi() {
+        return getClient().create(AuthApi.class);
     }
 }

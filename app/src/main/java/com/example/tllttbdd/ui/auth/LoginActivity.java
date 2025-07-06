@@ -16,7 +16,7 @@ import com.example.tllttbdd.MainActivity;
 public class LoginActivity extends AppCompatActivity {
     private EditText edtUsername, edtPassword;
     private Button btnLogin;
-    private TextView tvResult;
+    private TextView tvResult, tvForgotPassword;
     private AuthViewModel authViewModel;
     private TextView btnGoToRegister;
 
@@ -34,13 +34,14 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-
+        // Đặt layout cho Activity
         setContentView(R.layout.activity_login);
 
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvResult = findViewById(R.id.tvResult);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
         btnGoToRegister = findViewById(R.id.btnGoToRegister);
 
@@ -65,7 +66,10 @@ public class LoginActivity extends AppCompatActivity {
                 tvResult.setText("Lỗi kết nối hoặc dữ liệu không hợp lệ!");
             }
         });
-
+        tvForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+            startActivity(intent);
+        });
         btnLogin.setOnClickListener(v -> {
             String username = edtUsername.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
