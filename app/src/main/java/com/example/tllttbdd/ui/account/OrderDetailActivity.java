@@ -1,9 +1,11 @@
-package com.example.tllttbdd.ui.account;
+package com.example.tllttbdd.ui.account; // Giữ lại package của bạn
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ImageButton;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,7 +13,9 @@ import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.OrderDetailResponse;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.OrderApi;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,7 +31,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
 
-        // Ánh xạ view đúng theo XML mới
+        initViews();
+        setupListeners();
+
+        int orderId = getIntent().getIntExtra("ORDER_ID", -1);
+        if (orderId != -1) {
+            fetchOrderDetail(orderId);
+        } else {
+            Toast.makeText(this, "Lỗi: Không tìm thấy ID đơn hàng.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    private void initViews() {
         btnBack = findViewById(R.id.btnBack);
         tvOrderId = findViewById(R.id.tvOrderId);
         tvOrderName = findViewById(R.id.tvOrderName);
@@ -36,54 +52,67 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvOrderTotalInfo = findViewById(R.id.tvOrderTotalInfo);
         tvOrderTotalFooter = findViewById(R.id.tvOrderTotalFooter);
         recyclerView = findViewById(R.id.recyclerOrderDetail);
+
+        // Khởi tạo Adapter và gán cho RecyclerView ngay từ đầu
+        adapter = new OrderDetailAdapter(new ArrayList<>());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
 
+    private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
-
-        int orderId = getIntent().getIntExtra("ORDER_ID", -1);
-        if (orderId != -1) {
-            fetchOrderDetail(orderId);
-        }
     }
 
     private void fetchOrderDetail(int orderId) {
         OrderApi api = ApiClient.getClient().create(OrderApi.class);
         api.getOrderDetail(orderId).enqueue(new Callback<OrderDetailResponse>() {
             @Override
-            public void onResponse(Call<OrderDetailResponse> call, Response<OrderDetailResponse> response) {
+            public void onResponse(@NonNull Call<OrderDetailResponse> call, @NonNull Response<OrderDetailResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    OrderDetailResponse detail = response.body();
-
-                    // Hiển thị thông tin đơn hàng
-                    tvOrderId.setText("Mã đơn: " + detail.order.id_order);
-                    tvOrderName.setText("Tên: " + detail.order.name_order);
-                    tvOrderPhone.setText("SĐT: " + detail.order.phone_order);
-                    tvOrderAddress.setText("Địa chỉ: " + detail.order.address_order);
-
-                    String tongTien = "Tổng: " + detail.order.total + " đ";
-                    tvOrderTotalInfo.setText(tongTien);
-                    tvOrderTotalFooter.setText(tongTien);
-
-                    adapter = new OrderDetailAdapter(detail.products != null ? detail.products : new ArrayList<>());
-                    recyclerView.setAdapter(adapter);
+                    // Gọi hàm riêng để hiển thị dữ liệu
+                    bindData(response.body());
                 } else {
-                    tvOrderId.setText("Không lấy được chi tiết đơn hàng");
-                    tvOrderName.setText("");
-                    tvOrderPhone.setText("");
-                    tvOrderAddress.setText("");
-                    tvOrderTotalInfo.setText("");
-                    tvOrderTotalFooter.setText("");
+                    Toast.makeText(OrderDetailActivity.this, "Không lấy được chi tiết đơn hàng", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
-            public void onFailure(Call<OrderDetailResponse> call, Throwable t) {
-                tvOrderId.setText("Lỗi kết nối");
-                tvOrderName.setText("");
-                tvOrderPhone.setText("");
-                tvOrderAddress.setText("");
-                tvOrderTotalInfo.setText("");
-                tvOrderTotalFooter.setText("");
+            public void onFailure(@NonNull Call<OrderDetailResponse> call, @NonNull Throwable t) {
+                Toast.makeText(OrderDetailActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /**
+     * Hàm hiển thị toàn bộ thông tin đơn hàng lên giao diện
+     */
+    private void bindData(OrderDetailResponse detail) {
+        if (detail.order == null) return;
+
+        tvOrderId.setText("Mã đơn: " + detail.order.id_order);
+        tvOrderName.setText("Tên: " + detail.order.name_order);
+        tvOrderPhone.setText("SĐT: " + detail.order.phone_order);
+        tvOrderAddress.setText("Địa chỉ: " + detail.order.address_order);
+
+        // SỬA: Gọi hàm định dạng tiền tệ
+        displayFormattedTotal(detail.order.total);
+
+        // Cập nhật danh sách sản phẩm cho adapter
+        if (detail.products != null) {
+            adapter.updateProducts(detail.products);
+        }
+    }
+
+    /**
+     * Hàm nhận vào một số và hiển thị lên các TextView tổng tiền
+     * với định dạng tiền tệ Việt Nam.
+     * @param amount Số tiền cần định dạng (kiểu int hoặc double)
+     */
+    private void displayFormattedTotal(double amount) {
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        String formattedAmount = formatter.format(amount);
+        String finalPriceString = formattedAmount + "đ";
+
+        tvOrderTotalInfo.setText("Tổng: " + finalPriceString);
+        tvOrderTotalFooter.setText("Tổng: " + finalPriceString);
     }
 }

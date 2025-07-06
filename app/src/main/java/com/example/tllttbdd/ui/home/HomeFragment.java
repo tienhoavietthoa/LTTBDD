@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -14,8 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.Category;
@@ -25,12 +26,12 @@ import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.HomeApi;
 import com.example.tllttbdd.databinding.FragmentHomeBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,15 +42,14 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private ProductAdapter productAdapter;
     private BannerPagerAdapter bannerAdapter;
+    private List<Product> allProducts = new ArrayList<>();
 
-    // BƯỚC 1: KHAI BÁO LAUNCHER ĐỂ MỞ MÀN HÌNH CHI TIẾT VÀ NHẬN KẾT QUẢ
     private final ActivityResultLauncher<Intent> productDetailLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     String navigateTo = result.getData().getStringExtra("NAVIGATE_TO");
                     if ("CONTACTS".equals(navigateTo)) {
-                        // Yêu cầu MainActivity chuyển đến tab Liên hệ (NotificationsFragment)
                         BottomNavigationView navView = requireActivity().findViewById(R.id.nav_view);
                         if (navView != null) {
                             navView.setSelectedItemId(R.id.navigation_notifications);
@@ -71,6 +71,7 @@ public class HomeFragment extends Fragment {
         setupRecyclerView();
         connectBannerAndIndicator();
         setupSwipeToRefresh();
+        setupPriceFilterSpinner();
         fetchData();
     }
 
@@ -78,17 +79,62 @@ public class HomeFragment extends Fragment {
         productAdapter = new ProductAdapter(new ArrayList<>());
         binding.productRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.productRecycler.setAdapter(productAdapter);
-
-        // BƯỚC 2: GÁN SỰ KIỆN CLICK CHO ADAPTER ĐỂ MỞ MÀN HÌNH CHI TIẾT
         productAdapter.setOnItemClickListener(product -> {
             Intent intent = new Intent(requireContext(), ProductDetailActivity.class);
             intent.putExtra("PRODUCT_ID", product.id_product);
-            // Dùng launcher để mở Activity
             productDetailLauncher.launch(intent);
         });
     }
 
-    // ... các hàm còn lại (connectBannerAndIndicator, setupSwipeToRefresh, fetchData, onDestroyView) giữ nguyên ...
+    private void setupPriceFilterSpinner() {
+        List<String> priceRanges = new ArrayList<>(Arrays.asList("Tất cả giá", "Dưới 100,000đ", "100,000đ - 200,000đ", "Trên 200,000đ"));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, priceRanges);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.priceFilterSpinner.setAdapter(adapter);
+
+        binding.priceFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                filterProductList(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void filterProductList(int selection) {
+        if (allProducts.isEmpty()) return;
+
+        List<Product> filteredList;
+        try {
+            switch (selection) {
+                case 1: // Dưới 100,000đ
+                    filteredList = allProducts.stream()
+                            .filter(p -> Double.parseDouble(p.price) < 100000)
+                            .collect(Collectors.toList());
+                    break;
+                case 2: // 100,000đ - 200,000đ
+                    filteredList = allProducts.stream()
+                            .filter(p -> {
+                                double price = Double.parseDouble(p.price);
+                                return price >= 100000 && price <= 200000;
+                            })
+                            .collect(Collectors.toList());
+                    break;
+                case 3: // Trên 200,000đ
+                    filteredList = allProducts.stream()
+                            .filter(p -> Double.parseDouble(p.price) > 200000)
+                            .collect(Collectors.toList());
+                    break;
+                default: // Case 0: Tất cả giá
+                    filteredList = new ArrayList<>(allProducts);
+                    break;
+            }
+            productAdapter.setProducts(filteredList);
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Lỗi định dạng giá sản phẩm", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void connectBannerAndIndicator() {
         List<Integer> banners = Arrays.asList(R.drawable.banner1, R.drawable.banner2, R.drawable.banner3);
@@ -108,19 +154,15 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
                 binding.swipeRefreshLayout.setRefreshing(false);
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Category> categories = response.body().categories;
-                    if (categories != null && !categories.isEmpty()) {
-                        List<Product> allProducts = new ArrayList<>();
-                        for (Category cat : categories) {
-                            if (cat.products != null) {
-                                allProducts.addAll(cat.products);
-                            }
+                if (response.isSuccessful() && response.body() != null && response.body().categories != null) {
+                    allProducts.clear();
+                    for (Category cat : response.body().categories) {
+                        if (cat.products != null) {
+                            allProducts.addAll(cat.products);
                         }
-                        productAdapter.setProducts(allProducts);
-                    } else {
-                        Toast.makeText(getContext(), "Không có dữ liệu sản phẩm", Toast.LENGTH_SHORT).show();
                     }
+                    productAdapter.setProducts(allProducts);
+                    binding.priceFilterSpinner.setSelection(0);
                 } else {
                     Toast.makeText(getContext(), "Lấy dữ liệu thất bại", Toast.LENGTH_SHORT).show();
                 }

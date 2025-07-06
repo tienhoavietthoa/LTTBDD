@@ -23,4 +23,6 @@
     <color name="plant_divider">#E0E0E0</color>
     <color name="plant_green_text">#388E3C</color>
     <color name="harmonious_green_background">#5E7D6A</color>
+
+    <color name="background_card_pass">#F5F5F5</color>
 </resources>
