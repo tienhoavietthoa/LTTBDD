@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,11 +15,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Log; // Import Log
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.tllttbdd.R;
@@ -31,6 +33,10 @@ import com.example.tllttbdd.data.repository.CartRepository;
 import com.example.tllttbdd.ui.order.OrderActivity;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,12 +47,14 @@ public class ProductDetailActivity extends AppCompatActivity {
     private static final String KEY_USER_ID = "id_login";
 
     private ImageView imgProduct;
-    private TextView tvName, tvPrice, tvAuthor, tvDescription, tvOriginalPrice, tvPublisher, tvPublisherYear, tvDimension,
-            tvManufacturer, tvPage;
+    private TextView tvName, tvPrice, tvAuthor, tvDescription, tvOriginalPrice, tvPublisher, tvPublisherYear, tvDimension, tvManufacturer, tvPage;
     private LinearLayout layoutBtnAddToCart, btnChatNow;
     private Button btnBuyNow;
     private ImageButton btnBack;
-    private Product currentProduct; // Giữ tham chiếu đến sản phẩm hiện tại
+    private Product currentProduct;
+
+    private RecyclerView recyclerSimilarProducts;
+    private SimilarProductAdapter similarProductsAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,29 +63,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         initViews();
         setupClickListeners();
-
-        // --- THAY ĐỔI LỚN TẠI ĐÂY: Lấy đối tượng Product thay vì chỉ ID ---
-        currentProduct = (Product) getIntent().getSerializableExtra("product_detail"); // Lấy đối tượng Product
-
-        if (currentProduct != null) {
-            Log.d("ProductDetailActivity", "Received product: " + currentProduct.name_product + ", ID: " + currentProduct.id_product);
-            bindDataToView(currentProduct);
-            // Nếu bạn vẫn muốn fetch chi tiết đầy đủ từ API (ví dụ: để đảm bảo dữ liệu mới nhất),
-            // bạn có thể gọi fetchProductDetail(currentProduct.id_product) ở đây.
-            // Tuy nhiên, nếu đối tượng Product đã đầy đủ, không cần thiết.
-            // fetchProductDetail(currentProduct.id_product); // Chỉ gọi nếu cần cập nhật/lấy thêm dữ liệu
-        } else {
-            // Trường hợp không nhận được đối tượng Product, thử lấy ID (cho trường hợp từ HomeFragment)
-            int productId = getIntent().getIntExtra("PRODUCT_ID", -1);
-            if (productId != -1) {
-                Log.d("ProductDetailActivity", "Received PRODUCT_ID: " + productId + ". Fetching details from API.");
-                fetchProductDetail(productId); // Vẫn dùng fetchProductDetail nếu chỉ có ID
-            } else {
-                Log.e("ProductDetailActivity", "No product object or PRODUCT_ID received.");
-                Toast.makeText(this, "Không tìm thấy sản phẩm để hiển thị", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        }
+        handleIncomingIntent();
     }
 
     private void initViews() {
@@ -96,37 +82,46 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnBuyNow = findViewById(R.id.btnBuyNow);
         btnBack = findViewById(R.id.btnBack);
         btnChatNow = findViewById(R.id.btnChatNow);
+        recyclerSimilarProducts = findViewById(R.id.recyclerSimilarProducts);
+
+        setupSimilarProductsRecyclerView();
     }
 
-    /**
-     * Gán sự kiện click cho các nút
-     */
+    private void setupSimilarProductsRecyclerView() {
+        similarProductsAdapter = new SimilarProductAdapter(new ArrayList<>());
+        recyclerSimilarProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recyclerSimilarProducts.setAdapter(similarProductsAdapter);
+
+        similarProductsAdapter.setOnItemClickListener(product -> {
+            Intent intent = new Intent(this, ProductDetailActivity.class);
+            intent.putExtra("PRODUCT_ID", product.id_product);
+            startActivity(intent);
+            finish();
+        });
+    }
+
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
-
         btnChatNow.setOnClickListener(v -> {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("NAVIGATE_TO", "CONTACTS");
             setResult(RESULT_OK, resultIntent);
             finish();
         });
-
         btnBuyNow.setOnClickListener(v -> {
             if (currentProduct != null) {
                 Intent intent = new Intent(ProductDetailActivity.this, OrderActivity.class);
                 intent.putExtra("PRODUCT_OBJECT", currentProduct);
                 startActivity(intent);
             } else {
-                Toast.makeText(this, "Vui lòng chờ tải xong dữ liệu sản phẩm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vui lòng chờ tải dữ liệu", Toast.LENGTH_SHORT).show();
             }
         });
-
         layoutBtnAddToCart.setOnClickListener(v -> {
             if (currentProduct == null) {
-                Toast.makeText(this, "Vui lòng chờ tải xong dữ liệu sản phẩm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vui lòng chờ tải dữ liệu", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             int quantity = 1;
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             int idLogin = prefs.getInt(KEY_USER_ID, -1);
@@ -134,7 +129,6 @@ public class ProductDetailActivity extends AppCompatActivity {
                 Toast.makeText(this, "Bạn cần đăng nhập!", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             CartRepository repo = new CartRepository();
             repo.addToCart(currentProduct.id_product, quantity, idLogin).enqueue(new Callback<ApiResponse>() {
                 @Override
@@ -153,68 +147,96 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
     }
 
-    // Phương thức này vẫn được giữ lại để dùng khi chỉ có ID sản phẩm (ví dụ từ HomeFragment)
+    private void handleIncomingIntent() {
+        int productId = getIntent().getIntExtra("PRODUCT_ID", -1);
+        if (productId != -1) {
+            fetchProductDetail(productId);
+        } else {
+            Toast.makeText(this, "Lỗi: Không tìm thấy ID sản phẩm.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
     private void fetchProductDetail(int id) {
-        Log.d("ProductDetailActivity", "Fetching product detail from API for ID: " + id);
         ProductApi api = ApiClient.getClient().create(ProductApi.class);
         api.getProductDetail(id).enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().products.isEmpty()) {
                     currentProduct = response.body().products.get(0);
-                    Log.d("ProductDetailActivity", "API fetched product: " + currentProduct.name_product);
                     bindDataToView(currentProduct);
-                } else {
-                    String errorBody = "";
-                    try {
-                        if (response.errorBody() != null) {
-                            errorBody = response.errorBody().string();
-                        }
-                    } catch (Exception e) {
-                        Log.e("ProductDetailActivity", "Error reading errorBody: " + e.getMessage());
+                    // SỬA 1: Dùng ID DANH MỤC để tìm sản phẩm khác
+                    if (currentProduct.id_category > 0) {
+                        fetchSimilarProducts(currentProduct.id_category);
                     }
-                    Log.e("ProductDetailActivity", "Failed to fetch product detail. Code: " + response.code() + ", Message: " + response.message() + ", Error Body: " + errorBody);
-                    Toast.makeText(ProductDetailActivity.this, "Không tìm thấy chi tiết sản phẩm từ API", Toast.LENGTH_SHORT).show();
-                    finish();
+                } else {
+                    Toast.makeText(ProductDetailActivity.this, "Không thể tải chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
-                Log.e("ProductDetailActivity", "API call failed: " + t.getMessage(), t);
-                Toast.makeText(ProductDetailActivity.this, "Lỗi kết nối mạng khi tải chi tiết", Toast.LENGTH_SHORT).show();
-                finish();
+                Toast.makeText(ProductDetailActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // SỬA 2: VIẾT LẠI HOÀN TOÀN HÀM NÀY
+    private void fetchSimilarProducts(int categoryId) {
+        if (categoryId <= 0) {
+            findViewById(R.id.similar_products_block).setVisibility(View.GONE);
+            return;
+        }
+        ProductApi api = ApiClient.getClient().create(ProductApi.class);
+        // Gọi đúng API lấy sản phẩm theo danh mục
+        api.getProductsByCategory(categoryId).enqueue(new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
+                View similarBlock = findViewById(R.id.similar_products_block);
+                if (response.isSuccessful() && response.body() != null && response.body().products != null) {
+                    // Lọc sản phẩm hiện tại ra khỏi danh sách tương tự
+                    List<Product> similarProducts = response.body().products.stream()
+                            .filter(p -> p.id_product != currentProduct.id_product)
+                            .collect(Collectors.toList());
+
+                    if (!similarProducts.isEmpty()) {
+                        similarBlock.setVisibility(View.VISIBLE);
+                        similarProductsAdapter.setProducts(similarProducts);
+                    } else {
+                        similarBlock.setVisibility(View.GONE);
+                    }
+                } else {
+                    similarBlock.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
+                findViewById(R.id.similar_products_block).setVisibility(View.GONE);
             }
         });
     }
 
     private void bindDataToView(Product p) {
         tvName.setText(p.name_product);
-        Glide.with(this).load("http://10.0.2.2:3000" + p.image_product)
-                .placeholder(R.drawable.ic_launcher_background).into(imgProduct);
+        Glide.with(this).load("http://10.0.2.2:3000" + p.image_product).into(imgProduct);
 
-        if (p.author != null && !p.author.isEmpty()) { tvAuthor.setText("Tác giả: " + p.author); tvAuthor.setVisibility(View.VISIBLE); } else { tvAuthor.setVisibility(View.GONE); }
-        if (p.publisher != null && !p.publisher.isEmpty()) { tvPublisher.setText("Nhà xuất bản: " + p.publisher); tvPublisher.setVisibility(View.VISIBLE); } else { tvPublisher.setVisibility(View.GONE); }
-        if (p.publisher_year > 0) { tvPublisherYear.setText("Năm XB: " + p.publisher_year); tvPublisherYear.setVisibility(View.VISIBLE); } else { tvPublisherYear.setVisibility(View.GONE); }
-        if (p.dimension != null && !p.dimension.isEmpty()) { tvDimension.setText("Kích thước: " + p.dimension); tvDimension.setVisibility(View.VISIBLE); } else { tvDimension.setVisibility(View.GONE); }
-        if (p.manufacturer != null && !p.manufacturer.isEmpty()) { tvManufacturer.setText("Nhà SX: " + p.manufacturer); tvManufacturer.setVisibility(View.VISIBLE); } else { tvManufacturer.setVisibility(View.GONE); }
-        if (p.page > 0) { tvPage.setText("Số trang: " + p.page); tvPage.setVisibility(View.VISIBLE); } else { tvPage.setVisibility(View.GONE); }
-
-        View descriptionBlock = findViewById(R.id.product_description_block);
-        if (p.text_product != null && !p.text_product.isEmpty()) { tvDescription.setText(p.text_product); descriptionBlock.setVisibility(View.VISIBLE); } else { descriptionBlock.setVisibility(View.GONE); }
+        tvAuthor.setText(p.author);
+        tvPublisher.setText(p.publisher);
+        tvPublisherYear.setText(String.valueOf(p.publisher_year));
+        tvDimension.setText(p.dimension);
+        tvManufacturer.setText(p.manufacturer);
+        tvPage.setText(String.valueOf(p.page));
+        tvDescription.setText(p.text_product);
 
         DecimalFormat formatter = new DecimalFormat("#,###");
         try {
             double salePrice = Double.parseDouble(p.price);
-            String formattedSalePrice = "đ" + formatter.format(salePrice);
-            SpannableString spannableSalePrice = new SpannableString(formattedSalePrice);
-            spannableSalePrice.setSpan(new RelativeSizeSpan(0.7f), 0, 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            tvPrice.setText(spannableSalePrice);
-            btnBuyNow.setText("Mua ngay\n" + formattedSalePrice);
+            tvPrice.setText("đ" + formatter.format(salePrice));
+            btnBuyNow.setText("Mua ngay\n" + "đ" + formatter.format(salePrice));
 
-            // === ĐÃ SỬA LỖI LOGIC TẠI ĐÂY ===
-            // Dùng p.original_price thay vì p.price
-            if (p.price != null && !p.price.isEmpty()) { // SỬA TỪ p.price THÀNH p.original_price
-                double originalPrice = Double.parseDouble(p.price); // SỬA TỪ p.price THÀNH p.original_price
+            // SỬA 3: SỬA LỖI LOGIC GIÁ GỐC
+            if (p.price != null && !p.price.isEmpty()) {
+                double originalPrice = Double.parseDouble(p.price);
                 if (originalPrice > salePrice) {
                     tvOriginalPrice.setText("đ" + formatter.format(originalPrice));
                     tvOriginalPrice.setPaintFlags(tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -225,9 +247,8 @@ public class ProductDetailActivity extends AppCompatActivity {
             } else {
                 tvOriginalPrice.setVisibility(View.GONE);
             }
-        } catch (NumberFormatException e) {
-            Log.e("ProductDetail", "Error parsing price: " + e.getMessage());
-            tvPrice.setText(p.price);
+        } catch (Exception e) {
+            tvPrice.setText(p.price != null ? p.price + "đ" : "N/A");
             tvOriginalPrice.setVisibility(View.GONE);
         }
     }

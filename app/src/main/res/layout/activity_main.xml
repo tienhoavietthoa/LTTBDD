@@ -26,7 +26,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Logo bên trái -->
         <ImageView
             android:id="@+id/logo"
             android:layout_width="40dp"
@@ -35,9 +34,6 @@
             android:contentDescription="Logo"
             android:src="@drawable/iconlg" />
 
-        <!-- Ô tìm kiếm ở giữa (luôn hiển thị) -->
-
-        <!-- Nút tìm kiếm bên phải -->
         <EditText
             android:id="@+id/search_box"
             android:layout_width="0dp"

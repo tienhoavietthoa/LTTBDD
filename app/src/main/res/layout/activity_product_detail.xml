@@ -30,7 +30,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_chat_bubble" />
+                android:src="@drawable/ic_chat_bubble"
+                app:tint="@color/black" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,7 +56,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_add_to_cart" />
+                android:src="@drawable/ic_add_to_cart"
+                app:tint="@color/black" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -85,83 +87,77 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:paddingBottom="16dp">
 
             <ImageView
                 android:id="@+id/imgProductDetail"
-                android:layout_width="0dp"
-                android:layout_height="350dp"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_background"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                tools:src="@drawable/ic_launcher_background" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/product_info_card"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:cardElevation="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imgProductDetail">
+                android:layout_marginTop="-30dp"
+                android:layout_marginHorizontal="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/tvProductPriceDetail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#EE4D2D"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="₫99.450" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tvProductPriceDetail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#EE4D2D"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            tools:text="₫120,000" />
 
-                    <TextView
-                        android:id="@+id/tvOriginalPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:textSize="16sp"
-                        app:layout_constraintBaseline_toBaselineOf="@id/tvProductPriceDetail"
-                        app:layout_constraintStart_toEndOf="@id/tvProductPriceDetail"
-                        tools:text="₫200.000" />
+                        <TextView
+                            android:id="@+id/tvOriginalPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/tvProductPriceDetail"
+                            android:layout_alignBaseline="@id/tvProductPriceDetail"
+                            android:layout_marginStart="8dp"
+                            tools:text="₫200,000"
+                            android:textSize="16sp" />
+                    </RelativeLayout>
 
                     <TextView
                         android:id="@+id/tvProductNameDetail"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:textColor="@android:color/black"
-                        android:textSize="20sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProductPriceDetail"
-                        tools:text="tên sản phẩm" />
-
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        tools:text="Tên sản phẩm rất dài để kiểm tra xuống dòng" />
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/product_description_card"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:cardElevation="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/product_info_card">
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:id="@+id/product_description_block"
@@ -175,15 +171,48 @@
                         android:layout_height="wrap_content"
                         android:text="CHI TIẾT SẢN PHẨM"
                         android:textColor="@android:color/black"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <View
+                    <TableLayout
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="#E0E0E0" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp">
+                        <TableRow>
+                            <TextView android:text="Tác giả" android:layout_marginEnd="16dp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvProductAuthorDetail" tools:text="Tên tác giả" />
+                        </TableRow>
+                        <TableRow android:layout_marginTop="4dp">
+                            <TextView android:text="Nhà XB" android:layout_marginEnd="16dp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvProductPublisher" tools:text="NXB Trẻ" />
+                        </TableRow>
+                        <TableRow android:layout_marginTop="4dp">
+                            <TextView android:text="Năm XB" android:layout_marginEnd="16dp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvProductPublisherYear" tools:text="2024" />
+                        </TableRow>
+                        <TableRow android:layout_marginTop="4dp">
+                            <TextView android:text="Kích thước" android:layout_marginEnd="16dp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvProductDimension" tools:text="13 x 20.5 cm" />
+                        </TableRow>
+                        <TableRow android:layout_marginTop="4dp">
+                            <TextView android:text="Nhà SX" android:layout_marginEnd="16dp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvProductManufacturer" tools:text="Tên nhà sản xuất" />
+                        </TableRow>
+                        <TableRow android:layout_marginTop="4dp">
+                            <TextView android:text="Số trang" android:layout_marginEnd="16dp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tvProductPage" tools:text="320" />
+                        </TableRow>
+                    </TableLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MÔ TẢ SẢN PHẨM"
+                        android:layout_marginTop="20dp"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/tvProductDescDetail"
                         android:layout_width="wrap_content"
@@ -191,70 +220,55 @@
                         android:layout_marginTop="8dp"
                         android:lineSpacingExtra="4dp"
                         android:textSize="16sp"
-                        tools:text="Mô tả sản phẩm" />
-                    <TextView
-                        android:id="@+id/tvProductAuthorDetail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="Tác giả: " />
-
-                    <TextView
-                        android:id="@+id/tvProductPublisher"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="Nhà xuất bản: " />
-
-                    <TextView
-                        android:id="@+id/tvProductPublisherYear"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="Năm XB: " />
-
-                    <TextView
-                        android:id="@+id/tvProductDimension"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="Kích thước: " />
-
-                    <TextView
-                        android:id="@+id/tvProductManufacturer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="Nhà SX: " />
-
-                    <TextView
-                        android:id="@+id/tvProductPage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="Số trang: " />
-
-
+                        tools:text="Nội dung mô tả chi tiết của sản phẩm." />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:id="@+id/similar_products_block"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SẢN PHẨM KHÁC"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerSimilarProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="12dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_product_similar"
+                    tools:itemCount="5"/>
+            </LinearLayout>
+
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/ic_arrow_back"
-        app:tint="@android:color/white"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/oval_background"
+        android:contentDescription="Quay lại"
         android:elevation="6dp"
         android:padding="12dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="30dp"
+        android:src="@drawable/ic_arrow_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="Quay lại" />
+        app:tint="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
