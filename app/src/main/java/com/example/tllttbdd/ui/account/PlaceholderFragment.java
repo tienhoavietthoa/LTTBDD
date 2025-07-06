@@ -1,5 +1,3 @@
-// File 4: PlaceholderFragment.java (TẠO FILE MỚI)
-// File này cho Tab 2 rỗng.
 package com.example.tllttbdd.ui.account;
 
 import android.os.Bundle;

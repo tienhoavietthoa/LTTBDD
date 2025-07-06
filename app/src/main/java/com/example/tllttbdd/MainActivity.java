@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         // Lấy idLogin của người dùng hiện tại ở đây.
         // Tạm thời dùng 1 làm ví dụ, bạn cần thay thế bằng ID người dùng thực tế.
         int currentUserId = 1; // <-- Thay thế bằng ID người dùng thực tế từ SharedPreferences hoặc Auth
-        viewModel.loadOrdersFromRepository(currentUserId);  // Đã đổi tên phương thức và thêm tham số userId
+        viewModel.fetchOrderHistory(currentUserId);  // Đã đổi tên phương thức và thêm tham số userId
 
         // Optional: clear search nếu bạn muốn mỗi lần quay về sẽ xóa nội dung cũ
         // searchBox.setText("");

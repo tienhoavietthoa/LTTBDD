@@ -71,8 +71,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
             }
 
             // Lấy cả trạng thái và thông báo từ kết quả
-            Boolean success = (Boolean) result.get("success");
-            String message = (String) result.get("message");
+            Boolean success = result.isSuccess(); // Sử dụng getter isSuccess()
+            String message = result.getMessage(); // Sử dụng getter getMessage()
 
             // Kiểm tra dựa trên trạng thái boolean
             if (success != null && success) {

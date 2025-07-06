@@ -1,4 +1,4 @@
-package com.example.tllttbdd.ui.account;
+package com.example.tllttbdd.ui.account; // Đảm bảo đúng package
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,20 +8,31 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.Order;
-import java.text.DecimalFormat; // MỚI: Import để định dạng số
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.ArrayList; // Thêm import này
 
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.OrderViewHolder> {
+
     public interface OnOrderClickListener {
         void onOrderClick(Order order);
     }
 
-    private final List<Order> orders;
+    private List<Order> orders; // Giờ sẽ dùng ArrayList để dễ dàng thêm/bớt
     private final OnOrderClickListener listener;
 
     public OrderHistoryAdapter(List<Order> orders, OnOrderClickListener listener) {
-        this.orders = orders;
+        this.orders = new ArrayList<>(orders); // Khởi tạo với một bản sao của list
         this.listener = listener;
+    }
+
+    // Phương thức MỚI để cập nhật danh sách đơn hàng
+    public void setOrders(List<Order> newOrders) {
+        this.orders.clear(); // Xóa dữ liệu cũ
+        if (newOrders != null) {
+            this.orders.addAll(newOrders); // Thêm dữ liệu mới
+        }
+        notifyDataSetChanged(); // Thông báo cho RecyclerView cập nhật lại UI
     }
 
     @NonNull
@@ -35,18 +46,16 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orders.get(position);
 
-        // Gán dữ liệu vào ViewHolder
         holder.tvOrderId.setText("Mã đơn: " + order.id_order);
         holder.tvOrderDate.setText("Ngày: " + order.date_order);
 
-        // === SỬA LẠI TẠI ĐÂY: ÁP DỤNG ĐỊNH DẠNG TIỀN TỆ ===
         try {
             DecimalFormat formatter = new DecimalFormat("#,###");
             String formattedTotal = formatter.format(order.total);
             holder.tvOrderTotal.setText("Tổng: " + formattedTotal + "đ");
         } catch (Exception e) {
-            // Fallback nếu có lỗi (ví dụ: order.total không phải là số)
             holder.tvOrderTotal.setText("Tổng: " + order.total + "đ");
+            // Log.e("OrderAdapter", "Error formatting order total: " + e.getMessage()); // Thêm log nếu cần
         }
 
         // Gán sự kiện click

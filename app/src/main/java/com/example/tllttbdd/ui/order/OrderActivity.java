@@ -240,7 +240,7 @@ public class OrderActivity extends AppCompatActivity {
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().success) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             Toast.makeText(OrderActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
                             finish();
                         } else {

@@ -46,7 +46,8 @@
                 app:tabGravity="center"
                 app:tabIndicatorHeight="0dp" />
 
-            <RelativeLayout
+            <!-- ĐÃ THAY ĐỔI: Sử dụng ConstraintLayout thay cho RelativeLayout -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -55,24 +56,31 @@
 
                 <TextView
                     android:id="@+id/text_home"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
                     android:text="Khám Phá Sách Hay"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="22sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/price_filter_spinner"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintHorizontal_chainStyle="packed" />
 
                 <Spinner
                     android:id="@+id/price_filter_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:minHeight="48dp"/>
+                    android:minHeight="48dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/text_home"
+                    app:layout_constraintHorizontal_bias="1" /> <!-- Giữ spinner ở bên phải -->
 
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/productRecycler"

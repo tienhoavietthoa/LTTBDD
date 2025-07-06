@@ -2,136 +2,174 @@ package com.example.tllttbdd.data.repository;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.annotation.NonNull;
 
-import com.example.tllttbdd.data.model.LoginResponse;
-import com.example.tllttbdd.data.model.Order; // Import Order model
+import com.example.tllttbdd.data.model.ApiResponse;
+import com.example.tllttbdd.data.model.Order;
+import com.example.tllttbdd.data.model.OrderHistoryResponse;
 import com.example.tllttbdd.data.model.User;
+import com.example.tllttbdd.data.model.UserResponse;
 import com.example.tllttbdd.data.network.ApiClient;
-import com.example.tllttbdd.data.network.AccountApi;
+import com.example.tllttbdd.data.network.OrderApi;
+import com.example.tllttbdd.data.network.UserApi;
 
-import java.util.ArrayList; // Import ArrayList
-import java.util.List; // Import List
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import android.util.Log;
 
 public class AccountRepository {
-    private final AccountApi api;
-    private final MutableLiveData<User> user = new MutableLiveData<>();
-    private final MutableLiveData<Map<String, Object>> updateResult = new MutableLiveData<>();
-    private final MutableLiveData<Map<String, Object>> passwordResult = new MutableLiveData<>();
-    private final MutableLiveData<Map<String, Object>> deleteResult = new MutableLiveData<>();
 
-    // --- THÊM MỚI: LiveData để chứa danh sách đơn hàng ---
+    // --- LiveData cho User và các hành động liên quan ---
+    private final MutableLiveData<User> user = new MutableLiveData<>();
+    private final MutableLiveData<ApiResponse> profileUpdateResult = new MutableLiveData<>();
+    private final MutableLiveData<ApiResponse> passwordResult = new MutableLiveData<>();
+    private final MutableLiveData<ApiResponse> deleteResult = new MutableLiveData<>();
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>(); // LiveData chung cho lỗi
+
+    // --- LiveData cho Lịch sử đơn hàng ---
     private final MutableLiveData<List<Order>> orders = new MutableLiveData<>();
 
-    public AccountRepository() {
-        api = ApiClient.getClient().create(AccountApi.class);
+
+    // --- Getters cho LiveData ---
+    public LiveData<User> getUser() { return user; }
+    public LiveData<ApiResponse> getProfileUpdateResult() { return profileUpdateResult; }
+    public LiveData<ApiResponse> getPasswordResult() { return passwordResult; }
+    public LiveData<ApiResponse> getDeleteResult() { return deleteResult; }
+    public LiveData<String> getErrorMessage() { return errorMessage; }
+    public LiveData<List<Order>> getOrders() { return orders; }
+
+    // Phương thức để xóa thông báo lỗi
+    public void clearErrorMessage() {
+        errorMessage.setValue(null);
     }
 
-    public LiveData<User> getUser () { return user; }
-    public LiveData<Map<String, Object>> getUpdateResult() { return updateResult; }
-    public LiveData<Map<String, Object>> getPasswordResult() { return passwordResult; }
-    public LiveData<Map<String, Object>> getDeleteResult() { return deleteResult; }
+    // --- CÁC PHƯƠNG THỨC XỬ LÝ API VÀ DỮ LIỆU ---
 
-    // --- THÊM MỚI: Getter cho LiveData đơn hàng ---
-    public LiveData<List<Order>> getOrdersFromDatabase() {
-        return orders;
-    }
-
-    public void fetchProfile(int idLogin) {
-        Log.d("AccountRepository", "Fetching user profile for ID: " + idLogin);
-        api.getProfile(idLogin).enqueue(new Callback<LoginResponse>() {
+    public void fetchProfile(int userId) {
+        UserApi api = ApiClient.getClient().create(UserApi.class);
+        // Đã sửa: getUserProfile giờ nhận @Query("id")
+        api.getUserProfile(userId).enqueue(new Callback<UserResponse>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful()) {
-                    if (response.body() != null && response.body().user != null) {
-                        user.postValue(response.body().user);
-                        Log.d("AccountRepository", "User profile fetched successfully: " + response.body().user.name_information);
+            public void onResponse(@NonNull Call<UserResponse> call, @NonNull Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    User fetchedUser = response.body().getUser();
+                    if (fetchedUser != null) {
+                        user.setValue(fetchedUser);
                     } else {
-                        Log.e("AccountRepository", "Failed to fetch user profile: User object is null or response body is empty. Message: " + response.message());
-                        user.postValue(null);
+                        errorMessage.setValue("Không tìm thấy thông tin người dùng trong phản hồi.");
                     }
                 } else {
-                    Log.e("AccountRepository", "Failed to fetch user profile. HTTP Code: " + response.code() + ", Message: " + response.message());
-                    user.postValue(null);
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "No error body";
+                        errorMessage.setValue("Lỗi tải thông tin người dùng: " + response.code() + " - " + errorBody);
+                    } catch (IOException e) {
+                        errorMessage.setValue("Lỗi tải thông tin người dùng: " + response.code() + " - Lỗi đọc phản hồi.");
+                    }
                 }
             }
-
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Log.e("AccountRepository", "Error fetching user profile: " + t.getMessage());
-                user.postValue(null);
+            public void onFailure(@NonNull Call<UserResponse> call, @NonNull Throwable t) {
+                errorMessage.setValue("Lỗi kết nối mạng khi tải thông tin người dùng: " + t.getMessage());
             }
         });
     }
 
-    public void updateProfile(int idLogin, String name, String phone, String email, String dob) {
-        api.updateProfile(idLogin, name, phone, email, dob).enqueue(new Callback<Map<String, Object>>() {
+    public void changePassword(int userId, String oldPassword, String newPassword) {
+        UserApi api = ApiClient.getClient().create(UserApi.class);
+        // Đã sửa: changePassword giờ nhận @Query("userId")
+        api.changePassword(userId, oldPassword, newPassword).enqueue(new Callback<ApiResponse>() {
             @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                updateResult.postValue(response.body());
-                fetchProfile(idLogin); // Fetch lại profile mới nhất sau khi update
-            }
-
-            @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                Log.e("AccountRepository", "Error updating profile: " + t.getMessage());
-            }
-        });
-    }
-
-    public void changePassword(int idLogin, String oldPassword, String newPassword) {
-        api.changePassword(idLogin, oldPassword, newPassword).enqueue(new Callback<Map<String, Object>>() {
-            @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                passwordResult.postValue(response.body());
-                fetchProfile(idLogin); // Fetch lại profile mới nhất sau khi đổi mật khẩu
-            }
-
-            @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                Log.e("AccountRepository", "Error changing password: " + t.getMessage());
-            }
-        });
-    }
-
-    public void deleteAccount(int idLogin) {
-        api.deleteAccount(idLogin).enqueue(new Callback<Map<String, Object>>() {
-            @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                deleteResult.postValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                Log.e("AccountRepository", "Error deleting account: " + t.getMessage());
-            }
-        });
-    }
-
-    // --- THÊM MỚI: Phương thức để lấy danh sách đơn hàng ---
-    public void fetchOrders(int userId) { // Thêm userId nếu API yêu cầu
-        Log.d("AccountRepository", "Fetching orders for user ID: " + userId);
-        api.getOrders(userId).enqueue(new Callback<List<Order>>() {
-            @Override
-            public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+            public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    orders.postValue(response.body());
-                    Log.d("AccountRepository", "Orders fetched successfully. Count: " + response.body().size());
+                    passwordResult.setValue(response.body());
                 } else {
-                    Log.e("AccountRepository", "Failed to fetch orders. HTTP Code: " + response.code() + ", Message: " + response.message());
-                    orders.postValue(new ArrayList<>()); // Trả về danh sách rỗng nếu lỗi
+                    ApiResponse errorApi = new ApiResponse();
+                    errorApi.setSuccess(false);
+                    errorApi.setMessage(response.message().isEmpty() ? "Đổi mật khẩu thất bại" : response.message());
+                    passwordResult.setValue(errorApi);
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Order>> call, Throwable t) {
-                Log.e("AccountRepository", "Error fetching orders: " + t.getMessage());
-                orders.postValue(new ArrayList<>()); // Trả về danh sách rỗng nếu có lỗi mạng
+            public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                ApiResponse errorApi = new ApiResponse();
+                errorApi.setSuccess(false);
+                errorApi.setMessage("Lỗi kết nối mạng khi đổi mật khẩu: " + t.getMessage());
+                passwordResult.setValue(errorApi);
+            }
+        });
+    }
+
+    public void deleteAccount(int userId) {
+        UserApi api = ApiClient.getClient().create(UserApi.class);
+        // Đã sửa: deleteAccount giờ nhận @Query("id")
+        api.deleteAccount(userId).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    deleteResult.setValue(response.body());
+                } else {
+                    ApiResponse errorApi = new ApiResponse();
+                    errorApi.setSuccess(false);
+                    errorApi.setMessage("Xóa tài khoản thất bại: " + response.message());
+                    deleteResult.setValue(errorApi);
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                ApiResponse errorApi = new ApiResponse();
+                errorApi.setSuccess(false);
+                errorApi.setMessage("Lỗi kết nối mạng khi xóa tài khoản: " + t.getMessage());
+                deleteResult.setValue(errorApi);
+            }
+        });
+    }
+
+    public void updateProfile(int userId, String name, String phone, String email, String dob) {
+        UserApi api = ApiClient.getClient().create(UserApi.class);
+        // Đã sửa: updateProfile giờ nhận @Field("id")
+        api.updateProfile(userId, name, phone, email, dob).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    profileUpdateResult.setValue(response.body());
+                } else {
+                    ApiResponse errorApi = new ApiResponse();
+                    errorApi.setSuccess(false);
+                    errorApi.setMessage("Cập nhật profile thất bại: " + response.message());
+                    profileUpdateResult.setValue(errorApi);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                ApiResponse errorApi = new ApiResponse();
+                errorApi.setSuccess(false);
+                errorApi.setMessage("Lỗi kết nối mạng khi cập nhật profile: " + t.getMessage());
+                profileUpdateResult.setValue(errorApi);
+            }
+        });
+    }
+
+    public void fetchOrders(int userId) {
+        OrderApi api = ApiClient.getClient().create(OrderApi.class);
+        api.getOrderHistory(userId).enqueue(new Callback<OrderHistoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<OrderHistoryResponse> call, @NonNull Response<OrderHistoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().orders != null) {
+                    orders.setValue(response.body().orders);
+                } else {
+                    errorMessage.setValue("Không thể tải lịch sử đơn hàng: " + response.code());
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<OrderHistoryResponse> call, @NonNull Throwable t) {
+                errorMessage.setValue("Lỗi kết nối mạng khi tải đơn hàng: " + t.getMessage());
             }
         });
     }

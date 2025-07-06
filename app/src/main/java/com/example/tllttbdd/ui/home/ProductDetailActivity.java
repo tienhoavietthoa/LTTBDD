@@ -133,7 +133,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             repo.addToCart(currentProduct.id_product, quantity, idLogin).enqueue(new Callback<ApiResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                    if (response.isSuccessful() && response.body() != null && response.body().success) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                         Toast.makeText(ProductDetailActivity.this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(ProductDetailActivity.this, "Thêm vào giỏ hàng thất bại!", Toast.LENGTH_SHORT).show();

@@ -72,7 +72,7 @@ public class NotificationsViewModel extends ViewModel {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    sendResult.setValue(response.body().message);
+                    sendResult.setValue(response.body().getMessage());
                     fetchContactInfo(context); // reload messages
                 }
             }

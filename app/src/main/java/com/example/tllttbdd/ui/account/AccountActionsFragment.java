@@ -18,15 +18,14 @@ import java.text.DecimalFormat;
 
 public class AccountActionsFragment extends Fragment {
 
-    // Đổi tên biến cho nhất quán
-    private AccountViewModel accountViewModel;
+    private AccountViewModel viewModel;
     private TextView tvTotalOrders, tvTotalSpent;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Khởi tạo AccountViewModel
-        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        // Lấy ViewModel chung của Activity cha
+        viewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
     }
 
     @Nullable
@@ -46,15 +45,15 @@ public class AccountActionsFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        // SỬA LỖI TẠI ĐÂY: Đổi từ getOrderList() thành getOrders()
-        accountViewModel.getOrders().observe(getViewLifecycleOwner(), orders -> {
+        // Lắng nghe danh sách đơn hàng để cập nhật SỐ LƯỢNG
+        viewModel.getOrders().observe(getViewLifecycleOwner(), orders -> {
             if (orders != null) {
                 tvTotalOrders.setText(String.valueOf(orders.size()));
             }
         });
 
-        // Lắng nghe tổng tiền
-        accountViewModel.getTotalSpent().observe(getViewLifecycleOwner(), total -> {
+        // Lắng nghe tổng tiền để cập nhật TỔNG TIỀN
+        viewModel.getTotalSpent().observe(getViewLifecycleOwner(), total -> {
             if (total != null) {
                 DecimalFormat formatter = new DecimalFormat("#,###");
                 String formattedTotal = formatter.format(total) + "đ";
@@ -63,13 +62,10 @@ public class AccountActionsFragment extends Fragment {
         });
 
         // Lắng nghe lỗi (nếu có)
-        // Giả sử AccountRepository của bạn có LiveData cho lỗi
-        /*
-        accountViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
-        */
     }
 }

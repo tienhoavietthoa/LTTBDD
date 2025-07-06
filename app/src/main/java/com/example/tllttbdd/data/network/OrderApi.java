@@ -21,12 +21,12 @@ public interface OrderApi {
             @Field("address_order") String address,
             @Field("payment") String payment,
             @Field("total") int total,
-            @Field("id_login") int idLogin,
-            @Field("products") String productsJson // Thêm dòng này
+            @Field("id_login") int idLogin, // <-- ĐÃ SỬA: Tên tham số là "id_login"
+            @Field("products") String productsJson
     );
     // Thêm API lấy lịch sử đơn hàng
     @GET("/order/api/history")
-    Call<OrderHistoryResponse> getOrderHistory(@Query("id_login") int idLogin);
+    Call<OrderHistoryResponse> getOrderHistory(@Query("id_login") int idLogin); // <-- ĐÃ SỬA: Tên tham số là "id_login"
 
     // Thêm API lấy chi tiết đơn hàng
     @GET("/order/api/detail/{id}")
