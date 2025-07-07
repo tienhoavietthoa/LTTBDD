@@ -29,8 +29,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        binding.recyclerCategories.setLayoutManager(new GridLayoutManager(getContext(),2));
-        adapter = new CategoryAdapter(categoryList, category -> {
+        binding.recyclerCategories.setLayoutManager(new LinearLayoutManager(getContext()));        adapter = new CategoryAdapter(categoryList, category -> {
             // Khi nhấn vào 1 loại, mở ProductByCategoryActivity
             Intent intent = new Intent(getContext(), ProductByCategoryActivity.class);
             intent.putExtra("CATEGORY_ID", category.id_category);
