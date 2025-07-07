@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.Category;
 import com.example.tllttbdd.data.model.CategoryResponse;
+import com.example.tllttbdd.data.model.HomeResponse;
 import com.example.tllttbdd.data.model.Product;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.HomeApi;
@@ -150,17 +151,13 @@ public class HomeFragment extends Fragment {
     private void fetchData() {
         binding.swipeRefreshLayout.setRefreshing(true);
         HomeApi api = ApiClient.getClient().create(HomeApi.class);
-        api.getAllCategories().enqueue(new Callback<CategoryResponse>() {
+        api.getHomeData().enqueue(new Callback<HomeResponse>() {
             @Override
-            public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
+            public void onResponse(@NonNull Call<HomeResponse> call, @NonNull Response<HomeResponse> response) {
                 binding.swipeRefreshLayout.setRefreshing(false);
-                if (response.isSuccessful() && response.body() != null && response.body().categories != null) {
+                if (response.isSuccessful() && response.body() != null && response.body().products != null) {
                     allProducts.clear();
-                    for (Category cat : response.body().categories) {
-                        if (cat.products != null) {
-                            allProducts.addAll(cat.products);
-                        }
-                    }
+                    allProducts.addAll(response.body().products);
                     productAdapter.setProducts(allProducts);
                     binding.priceFilterSpinner.setSelection(0);
                 } else {
@@ -168,7 +165,7 @@ public class HomeFragment extends Fragment {
                 }
             }
             @Override
-            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<HomeResponse> call, @NonNull Throwable t) {
                 binding.swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }

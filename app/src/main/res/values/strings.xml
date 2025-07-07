@@ -53,4 +53,7 @@
     <string name="login_prompt">Đã có tài khoản? <font color='#2E7D32'><b>Đăng nhập</b></font></string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="api_base_url">http://10.0.2.2:3000/</string>
+
 </resources>

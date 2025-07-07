@@ -10,6 +10,8 @@ public class Category {
 
     @SerializedName("name_category")
     public String name_category;
+
+    @SerializedName("image")
     public String image;
 
     @SerializedName("products")

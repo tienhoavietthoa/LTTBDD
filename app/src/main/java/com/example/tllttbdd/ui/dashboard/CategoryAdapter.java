@@ -1,5 +1,6 @@
 package com.example.tllttbdd.ui.dashboard;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,23 +32,21 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category, parent, false);
         return new CategoryViewHolder(v);
     }
-
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category c = categories.get(position);
         holder.tvName.setText(c.name_category);
+        Log.d("CategoryImage", "URL: " + c.image);
 
-        if (c.image != null && !c.image.isEmpty()) {
-            Glide.with(holder.imgCategory.getContext())
-                    .load(c.image)
-                    .placeholder(R.drawable.ic_book_placeholder)
-                    .into(holder.imgCategory);
-        } else {
-            holder.imgCategory.setImageResource(R.drawable.ic_book_placeholder);
-        }
+        // Load ảnh nếu có, nếu không thì dùng ảnh mặc định
+        Glide.with(holder.imgCategory.getContext())
+                .load(c.image)
+                .placeholder(R.drawable.ic_book_placeholder)
+                .error(R.drawable.ic_book_placeholder)
+                .into(holder.imgCategory);
+
         holder.itemView.setOnClickListener(v -> listener.onCategoryClick(c));
     }
-
     @Override
     public int getItemCount() {
         return categories.size();
@@ -55,7 +54,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
-        ImageView imgCategory; // Thêm biến này
+        ImageView imgCategory;
         CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvCategoryName);
