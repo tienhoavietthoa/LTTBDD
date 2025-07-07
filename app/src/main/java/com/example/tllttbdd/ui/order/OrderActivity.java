@@ -26,8 +26,8 @@ import com.example.tllttbdd.data.model.CartItem;
 import com.example.tllttbdd.data.model.Product;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.OrderApi;
-import com.example.tllttbdd.data.model.Province;
 import com.example.tllttbdd.data.model.District;
+import com.example.tllttbdd.data.model.Province;
 import com.example.tllttbdd.data.model.Ward;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -71,7 +71,6 @@ public class OrderActivity extends AppCompatActivity {
         editName = findViewById(R.id.editName);
         editPhone = findViewById(R.id.editPhone);
         spinnerCity = findViewById(R.id.spinnerCity);
-        spinnerDistrict = findViewById(R.id.spinnerDistrict);
         spinnerWard = findViewById(R.id.spinnerWard);
         editDetailAddress = findViewById(R.id.editDetailAddress);
         radioPayment = findViewById(R.id.radioPayment);
@@ -82,6 +81,7 @@ public class OrderActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
     }
+// ...existing code...
 
     private void setupAddressSpinners() {
         String json = loadJSONFromAsset("provinces.json");
@@ -99,26 +99,8 @@ public class OrderActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 Province selectedProvince = provinceList.get(position);
-                List<String> districtNames = new ArrayList<>();
-                for (District d : selectedProvince.districts) districtNames.add(d.name);
-                districtAdapter = new ArrayAdapter<>(OrderActivity.this, android.R.layout.simple_spinner_item, districtNames);
-                districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerDistrict.setAdapter(districtAdapter);
-                spinnerWard.setAdapter(null);
-            }
-            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
-
-        spinnerDistrict.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                int cityPos = spinnerCity.getSelectedItemPosition();
-                if (cityPos < 0) return;
-                Province selectedProvince = provinceList.get(cityPos);
-                if (position < 0 || position >= selectedProvince.districts.size()) return;
-                District selectedDistrict = selectedProvince.districts.get(position);
                 List<String> wardNames = new ArrayList<>();
-                for (Ward w : selectedDistrict.wards) wardNames.add(w.name);
+                for (Ward w : selectedProvince.wards) wardNames.add(w.name);
                 wardAdapter = new ArrayAdapter<>(OrderActivity.this, android.R.layout.simple_spinner_item, wardNames);
                 wardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerWard.setAdapter(wardAdapter);
@@ -126,6 +108,7 @@ public class OrderActivity extends AppCompatActivity {
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
     }
+// ...existing code...
 
     private void handleIncomingIntent() {
         cartItemsToOrder = new ArrayList<>();
@@ -181,12 +164,11 @@ public class OrderActivity extends AppCompatActivity {
         String detail = editDetailAddress.getText().toString().trim();
 
         String city = spinnerCity.getSelectedItem() != null ? spinnerCity.getSelectedItem().toString() : "";
-        String district = spinnerDistrict.getSelectedItem() != null ? spinnerDistrict.getSelectedItem().toString() : "";
         String ward = spinnerWard.getSelectedItem() != null ? spinnerWard.getSelectedItem().toString() : "";
+        String address = detail + ", " + ward + ", " + city;
 
-        String address = detail + ", " + ward + ", " + district + ", " + city;
-
-        if (name.isEmpty() || phone.isEmpty() || detail.isEmpty() || city.isEmpty() || district.isEmpty() || ward.isEmpty()) {
+        // Sửa điều kiện kiểm tra thiếu thông tin:
+        if (name.isEmpty() || phone.isEmpty() || detail.isEmpty() || city.isEmpty() || ward.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập/chọn đủ thông tin giao hàng!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -299,6 +281,7 @@ public class OrderActivity extends AppCompatActivity {
     public static class Province {
         public String name;
         public List<District> districts;
+        public Ward[] wards;
     }
     public static class District {
         public String name;
