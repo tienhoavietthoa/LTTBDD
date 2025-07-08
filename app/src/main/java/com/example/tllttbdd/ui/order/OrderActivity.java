@@ -24,11 +24,13 @@ import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.ApiResponse;
 import com.example.tllttbdd.data.model.CartItem;
 import com.example.tllttbdd.data.model.Product;
+import com.example.tllttbdd.data.model.VNPayResponse;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.OrderApi;
 import com.example.tllttbdd.data.model.District;
 import com.example.tllttbdd.data.model.Province;
 import com.example.tllttbdd.data.model.Ward;
+import com.example.tllttbdd.ui.payment.VNPayActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -167,7 +169,6 @@ public class OrderActivity extends AppCompatActivity {
         String ward = spinnerWard.getSelectedItem() != null ? spinnerWard.getSelectedItem().toString() : "";
         String address = detail + ", " + ward + ", " + city;
 
-        // Sửa điều kiện kiểm tra thiếu thông tin:
         if (name.isEmpty() || phone.isEmpty() || detail.isEmpty() || city.isEmpty() || ward.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập/chọn đủ thông tin giao hàng!", Toast.LENGTH_SHORT).show();
             return;
@@ -194,40 +195,34 @@ public class OrderActivity extends AppCompatActivity {
 
         String productsJson = new Gson().toJson(cartItemsToOrder);
 
-        if (payment.equalsIgnoreCase("VNPAY")) {
-            try {
-                String fakePaymentUrl = "http://10.0.2.2:3000/fake-payment.html"
-                        + "?name=" + URLEncoder.encode(name, "UTF-8")
-                        + "&phone=" + URLEncoder.encode(phone, "UTF-8")
-                        + "&address=" + URLEncoder.encode(address, "UTF-8")
-                        + "&total=" + (int) total
-                        + "&idLogin=" + idLogin
-                        + "&productsJson=" + URLEncoder.encode(productsJson, "UTF-8");
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(fakePaymentUrl));
-                startActivity(browserIntent);
-            } catch (Exception e) {
-                Toast.makeText(this, "Lỗi tạo link thanh toán!", Toast.LENGTH_SHORT).show();
-            }
-            return;
-        }
-
-        // Thanh toán COD như cũ
+        // Gọi API tạo đơn hàng
         OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
         orderApi.createOrder(name, phone, address, payment, (int) total, idLogin, productsJson)
-                .enqueue(new Callback<ApiResponse>() {
+                .enqueue(new Callback<VNPayResponse>() {
                     @Override
-                    public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            Toast.makeText(OrderActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
-                            finish();
+                    public void onResponse(@NonNull Call<VNPayResponse> call, @NonNull Response<VNPayResponse> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().success) {
+                            VNPayResponse vnpayResponse = response.body();
+
+                            if (payment.equalsIgnoreCase("VNPAY")) {
+                                // Mở VNPayActivity để thanh toán
+                                Intent intent = new Intent(OrderActivity.this, VNPayActivity.class);
+                                intent.putExtra("vnpayUrl", vnpayResponse.vnpayUrl);
+                                intent.putExtra("orderId", vnpayResponse.orderId);
+                                startActivityForResult(intent, 1001);
+                            } else {
+                                // Thanh toán COD thành công
+                                Toast.makeText(OrderActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
                         } else {
                             Toast.makeText(OrderActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
-                        Toast.makeText(OrderActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                    public void onFailure(@NonNull Call<VNPayResponse> call, @NonNull Throwable t) {
+                        Toast.makeText(OrderActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -235,32 +230,13 @@ public class OrderActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
-            String name = data.getStringExtra("name");
-            String phone = data.getStringExtra("phone");
-            String address = data.getStringExtra("address");
-            int total = data.getIntExtra("total", 0);
-            int idLogin = data.getIntExtra("idLogin", -1);
-            String productsJson = data.getStringExtra("productsJson");
-
-            OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
-            orderApi.createOrder(name, phone, address, "VNPAY", total, idLogin, productsJson)
-                    .enqueue(new Callback<ApiResponse>() {
-                        @Override
-                        public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                            if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                                Toast.makeText(OrderActivity.this, "Đặt hàng thành công qua VNPAY!", Toast.LENGTH_SHORT).show();
-                                finish();
-                            } else {
-                                Toast.makeText(OrderActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
-                            Toast.makeText(OrderActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+        if (requestCode == 1001) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Thanh toán VNPay thành công!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Thanh toán VNPay thất bại!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
