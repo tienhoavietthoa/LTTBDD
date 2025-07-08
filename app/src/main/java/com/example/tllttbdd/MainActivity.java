@@ -17,7 +17,7 @@ import com.example.tllttbdd.ui.chatbox.ChatboxActivity;
 
 import com.example.tllttbdd.ui.home.ProductSearchActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton; // thêm dòng này
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText searchBox;
     private ImageButton btnSearch;
     private ImageView logo;
-    private FloatingActionButton btnOpenChat; // thêm dòng này
+    private FloatingActionButton btnOpenChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         logo = findViewById(R.id.logo);
         searchBox = findViewById(R.id.search_box);
         btnSearch = findViewById(R.id.btn_search);
-        btnOpenChat = findViewById(R.id.btnOpenChat); // thêm dòng này
+        btnOpenChat = findViewById(R.id.btnOpenChat);
 
         setupSearchListeners();
 
@@ -106,7 +106,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         AccountViewModel viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
-        int currentUserId = 1;
-        viewModel.loadOrdersFromRepository(currentUserId);
+
+        int currentUserId = 1; // <-- Thay thế bằng ID người dùng thực tế từ SharedPreferences hoặc Auth
+        viewModel.fetchOrderHistory(currentUserId);  // Đã đổi tên phương thức và thêm tham số userId
+
+        // Optional: clear search nếu bạn muốn mỗi lần quay về sẽ xóa nội dung cũ
+        // searchBox.setText("");
     }
 }

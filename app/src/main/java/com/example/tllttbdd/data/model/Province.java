@@ -4,5 +4,5 @@ import java.util.List;
 
 public class Province {
     public String name;
-    public List<District> districts;
+    public List<Ward> wards;
 }

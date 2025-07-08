@@ -1,19 +1,18 @@
 package com.example.tllttbdd.ui.order;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.Intent;
-import android.widget.ImageButton;
-import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,14 +26,15 @@ import com.example.tllttbdd.data.model.CartItem;
 import com.example.tllttbdd.data.model.Product;
 import com.example.tllttbdd.data.network.ApiClient;
 import com.example.tllttbdd.data.network.OrderApi;
-import com.example.tllttbdd.data.model.Province;
 import com.example.tllttbdd.data.model.District;
+import com.example.tllttbdd.data.model.Province;
 import com.example.tllttbdd.data.model.Ward;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,6 @@ import retrofit2.Response;
 public class OrderActivity extends AppCompatActivity {
     private EditText editName, editPhone, editDetailAddress;
     private RadioGroup radioPayment;
-    private ImageView imgQR;
     private TextView orderTotal;
     private Button btnOrder;
     private RecyclerView orderProductRecycler;
@@ -72,11 +71,9 @@ public class OrderActivity extends AppCompatActivity {
         editName = findViewById(R.id.editName);
         editPhone = findViewById(R.id.editPhone);
         spinnerCity = findViewById(R.id.spinnerCity);
-        spinnerDistrict = findViewById(R.id.spinnerDistrict);
         spinnerWard = findViewById(R.id.spinnerWard);
         editDetailAddress = findViewById(R.id.editDetailAddress);
         radioPayment = findViewById(R.id.radioPayment);
-        imgQR = findViewById(R.id.imgQR);
         orderTotal = findViewById(R.id.orderTotal);
         btnOrder = findViewById(R.id.btnOrder);
         orderProductRecycler = findViewById(R.id.orderProductRecycler);
@@ -84,69 +81,45 @@ public class OrderActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
     }
+// ...existing code...
 
     private void setupAddressSpinners() {
-        // Đọc file JSON địa chỉ từ assets
         String json = loadJSONFromAsset("provinces.json");
         if (json != null) {
             provinceList = new Gson().fromJson(json, new TypeToken<List<Province>>(){}.getType());
         }
 
-        // Fill city spinner
         List<String> cityNames = new ArrayList<>();
         for (Province p : provinceList) cityNames.add(p.name);
         cityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cityNames);
         cityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCity.setAdapter(cityAdapter);
 
-        // Khi chọn city, fill district
-        spinnerCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerCity.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 Province selectedProvince = provinceList.get(position);
-                List<String> districtNames = new ArrayList<>();
-                for (District d : selectedProvince.districts) districtNames.add(d.name);
-                districtAdapter = new ArrayAdapter<>(OrderActivity.this, android.R.layout.simple_spinner_item, districtNames);
-                districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerDistrict.setAdapter(districtAdapter);
-                // Reset ward spinner
-                spinnerWard.setAdapter(null);
-            }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        // Khi chọn district, fill ward
-        spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int cityPos = spinnerCity.getSelectedItemPosition();
-                if (cityPos < 0) return;
-                Province selectedProvince = provinceList.get(cityPos);
-                if (position < 0 || position >= selectedProvince.districts.size()) return;
-                District selectedDistrict = selectedProvince.districts.get(position);
                 List<String> wardNames = new ArrayList<>();
-                for (Ward w : selectedDistrict.wards) wardNames.add(w.name);
+                for (Ward w : selectedProvince.wards) wardNames.add(w.name);
                 wardAdapter = new ArrayAdapter<>(OrderActivity.this, android.R.layout.simple_spinner_item, wardNames);
                 wardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerWard.setAdapter(wardAdapter);
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
+            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
     }
+// ...existing code...
 
     private void handleIncomingIntent() {
         cartItemsToOrder = new ArrayList<>();
         Intent intent = getIntent();
 
-        // Nhận danh sách sản phẩm từ giỏ hàng
         if (intent.hasExtra("selectedItems")) {
             ArrayList<CartItem> itemsFromCart = intent.getParcelableArrayListExtra("selectedItems");
             if (itemsFromCart != null && !itemsFromCart.isEmpty()) {
                 cartItemsToOrder.addAll(itemsFromCart);
             }
-        }
-        // Nhận một sản phẩm từ nút "Mua ngay"
-        else if (intent.hasExtra("PRODUCT_OBJECT")) {
+        } else if (intent.hasExtra("PRODUCT_OBJECT")) {
             Product productFromDetail = (Product) intent.getSerializableExtra("PRODUCT_OBJECT");
             if (productFromDetail != null) {
                 CartItem singleItem = new CartItem(
@@ -160,23 +133,19 @@ public class OrderActivity extends AppCompatActivity {
             }
         }
 
-        // Nếu không có sản phẩm nào, báo lỗi và thoát
         if (cartItemsToOrder.isEmpty()) {
             Toast.makeText(this, "Không có sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // Hiển thị dữ liệu lên giao diện
         displayOrderData();
     }
 
     private void displayOrderData() {
-        // Hiển thị danh sách sản phẩm
         orderProductRecycler.setLayoutManager(new LinearLayoutManager(this));
         orderProductRecycler.setAdapter(new OrderProductAdapter(cartItemsToOrder));
 
-        // Tính và hiển thị tổng tiền
         double total = 0;
         for (CartItem item : cartItemsToOrder) {
             total += (double) item.price * item.quantity;
@@ -186,14 +155,6 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        radioPayment.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.radioQR) {
-                imgQR.setVisibility(View.VISIBLE);
-            } else {
-                imgQR.setVisibility(View.GONE);
-            }
-        });
-
         btnOrder.setOnClickListener(v -> placeOrder());
     }
 
@@ -203,17 +164,15 @@ public class OrderActivity extends AppCompatActivity {
         String detail = editDetailAddress.getText().toString().trim();
 
         String city = spinnerCity.getSelectedItem() != null ? spinnerCity.getSelectedItem().toString() : "";
-        String district = spinnerDistrict.getSelectedItem() != null ? spinnerDistrict.getSelectedItem().toString() : "";
         String ward = spinnerWard.getSelectedItem() != null ? spinnerWard.getSelectedItem().toString() : "";
+        String address = detail + ", " + ward + ", " + city;
 
-        String address = detail + ", " + ward + ", " + district + ", " + city;
-
-        if (name.isEmpty() || phone.isEmpty() || detail.isEmpty() || city.isEmpty() || district.isEmpty() || ward.isEmpty()) {
+        // Sửa điều kiện kiểm tra thiếu thông tin:
+        if (name.isEmpty() || phone.isEmpty() || detail.isEmpty() || city.isEmpty() || ward.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập/chọn đủ thông tin giao hàng!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Kiểm tra số điện thoại đủ 10 số
         if (!phone.matches("^0\\d{9}$")) {
             Toast.makeText(this, "Số điện thoại phải đủ 10 số và bắt đầu bằng số 0!", Toast.LENGTH_SHORT).show();
             return;
@@ -235,12 +194,30 @@ public class OrderActivity extends AppCompatActivity {
 
         String productsJson = new Gson().toJson(cartItemsToOrder);
 
+        if (payment.equalsIgnoreCase("VNPAY")) {
+            try {
+                String fakePaymentUrl = "http://10.0.2.2:3000/fake-payment.html"
+                        + "?name=" + URLEncoder.encode(name, "UTF-8")
+                        + "&phone=" + URLEncoder.encode(phone, "UTF-8")
+                        + "&address=" + URLEncoder.encode(address, "UTF-8")
+                        + "&total=" + (int) total
+                        + "&idLogin=" + idLogin
+                        + "&productsJson=" + URLEncoder.encode(productsJson, "UTF-8");
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(fakePaymentUrl));
+                startActivity(browserIntent);
+            } catch (Exception e) {
+                Toast.makeText(this, "Lỗi tạo link thanh toán!", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        // Thanh toán COD như cũ
         OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
         orderApi.createOrder(name, phone, address, payment, (int) total, idLogin, productsJson)
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().success) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             Toast.makeText(OrderActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
                             finish();
                         } else {
@@ -255,7 +232,38 @@ public class OrderActivity extends AppCompatActivity {
                 });
     }
 
-    // Đọc file JSON từ assets
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            String name = data.getStringExtra("name");
+            String phone = data.getStringExtra("phone");
+            String address = data.getStringExtra("address");
+            int total = data.getIntExtra("total", 0);
+            int idLogin = data.getIntExtra("idLogin", -1);
+            String productsJson = data.getStringExtra("productsJson");
+
+            OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
+            orderApi.createOrder(name, phone, address, "VNPAY", total, idLogin, productsJson)
+                    .enqueue(new Callback<ApiResponse>() {
+                        @Override
+                        public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
+                            if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                                Toast.makeText(OrderActivity.this, "Đặt hàng thành công qua VNPAY!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(OrderActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                            Toast.makeText(OrderActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
     private String loadJSONFromAsset(String filename) {
         try {
             InputStream is = getAssets().open(filename);
@@ -270,10 +278,10 @@ public class OrderActivity extends AppCompatActivity {
         }
     }
 
-    // Các class mẫu cho địa chỉ
     public static class Province {
         public String name;
         public List<District> districts;
+        public Ward[] wards;
     }
     public static class District {
         public String name;

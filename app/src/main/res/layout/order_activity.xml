@@ -139,12 +139,6 @@
                 android:layout_marginBottom="8dp" />
 
             <Spinner
-                android:id="@+id/spinnerDistrict"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="8dp" />
-
-            <Spinner
                 android:id="@+id/spinnerWard"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -199,11 +193,11 @@
                     android:textSize="16sp" />
 
                 <RadioButton
-                    android:id="@+id/radioQR"
+                    android:id="@+id/radioVNPAY"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="Chuyển khoản (QR)"
+                    android:text="VNPAY"
                     android:textSize="16sp" />
             </RadioGroup>
 
