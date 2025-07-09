@@ -78,6 +78,20 @@
                 android:textColor="@color/plant_green_darker"
                 android:textColorHint="@color/plant_green_darker" />
 
+            <!-- Thêm TextView Quên mật khẩu -->
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="8dp"
+                android:text="Quên mật khẩu?"
+                android:textColor="@color/plant_green_darker"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/tvResult"
                 android:layout_width="match_parent"
