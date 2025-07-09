@@ -28,6 +28,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.chatbox.ChatboxActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+
+        <activity
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
         <activity android:name=".ui.home.ProductDetailActivity" />
