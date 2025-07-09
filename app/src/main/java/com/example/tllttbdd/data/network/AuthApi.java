@@ -21,4 +21,10 @@ public interface AuthApi {
             @Field("name_login") String username,
             @Field("pass") String password
     );
+    @POST("/api/auth/reset-password")
+    @FormUrlEncoded
+    Call<LoginResponse> resetPassword(
+            @Field("phone_information") String phone,
+            @Field("new_password") String newPassword
+    );
 }

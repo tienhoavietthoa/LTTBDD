@@ -5,13 +5,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView; // Quan trọng: import TextView
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.tllttbdd.R;
 import com.example.tllttbdd.data.model.LoginResponse;
 import com.example.tllttbdd.MainActivity;
+import com.example.tllttbdd.ui.account.ForgotPasswordActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText edtUsername, edtPassword;
@@ -19,6 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView tvResult;
     private AuthViewModel authViewModel;
     private TextView btnGoToRegister;
+    private TextView tvForgotPassword; // Thêm TextView cho quên mật khẩu
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,18 +36,19 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-
         setContentView(R.layout.activity_login);
 
+        // Khởi tạo views
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvResult = findViewById(R.id.tvResult);
-
         btnGoToRegister = findViewById(R.id.btnGoToRegister);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword); // Khởi tạo TextView quên mật khẩu
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
+        // Observer cho kết quả đăng nhập
         authViewModel.getLoginResult().observe(this, loginResponse -> {
             if (loginResponse != null && loginResponse.success) {
                 // Lưu trạng thái đăng nhập
@@ -66,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Xử lý nút đăng nhập
         btnLogin.setOnClickListener(v -> {
             String username = edtUsername.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
@@ -80,6 +84,12 @@ public class LoginActivity extends AppCompatActivity {
         // Xử lý chuyển sang màn hình đăng ký
         btnGoToRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
+
+        // Xử lý chuyển sang màn hình quên mật khẩu
+        tvForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
             startActivity(intent);
         });
     }
