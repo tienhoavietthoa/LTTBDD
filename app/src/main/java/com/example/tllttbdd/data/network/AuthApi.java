@@ -27,4 +27,5 @@ public interface AuthApi {
             @Field("phone_information") String phone,
             @Field("new_password") String newPassword
     );
-}
+
+    }
