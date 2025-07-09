@@ -12,15 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:background="@android:color/transparent"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
             android:id="@+id/logo"
@@ -37,8 +34,7 @@
             android:layout_weight="1"
             android:background="@drawable/search_box_bg"
             android:hint="Tìm kiếm..."
-            android:padding="10dp"
-            android:visibility="visible" />
+            android:padding="10dp" />
 
         <ImageButton
             android:id="@+id/btn_search"
@@ -54,10 +50,10 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/mobile_navigation"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toTopOf="@id/nav_view"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/mobile_navigation"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
@@ -74,15 +70,16 @@
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
-    <!-- ✅ Nút mở Chatbox -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!-- Nút Chat xanh lá di chuyển được -->
+    <ImageView
         android:id="@+id/btnOpenChat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_dialog_email"
-        app:backgroundTint="@color/purple_500"
+        android:background="@drawable/bg_round_green"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toTopOf="@id/nav_view"
         app:layout_constraintEnd_toEndOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
