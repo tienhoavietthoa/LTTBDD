@@ -8,7 +8,7 @@ import retrofit2.Callback;
 
 public class AuthRepository {
     private AuthApi authApi;
-
+    //Lấy instance của Retrofit client,Tạo implementation cho interface AuthApi
     public AuthRepository() {
         authApi = ApiClient.getClient().create(AuthApi.class);
     }

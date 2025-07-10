@@ -14,8 +14,6 @@ public interface AuthApi {
             @Field("pass") String password,
             @Field("phone_information") String phone
     );
-    @POST("reset-password-endpoint") // sửa lại endpoint đúng với API của bạn
-    Call<LoginResponse> resetPassword(@Field("phone") String phone, @Field("password") String password);
 
     @POST("/auth/login")
     @FormUrlEncoded
